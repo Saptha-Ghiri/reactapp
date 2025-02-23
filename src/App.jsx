@@ -16,6 +16,7 @@ import FoodReceiver from "./FoodReceiver"; // Add this import
 import DonorNotifications from "./DonorNotifications"; // Add this import
 import Game from "./Game";
 import Res from "./Res";
+import Index from "./Index";
 
 // Protected Route Component
 const ProtectedRoute = ({ element }) => {
@@ -48,6 +49,9 @@ const App = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/game" element={<Game />} />
         <Route path="/res" element={<Res />} />
+        <Route path="/index" element={<Index />} />
+        <Route path="/" element={<Index />} />
+
 
 
         <Route path="*" element={<NotFound />} />
