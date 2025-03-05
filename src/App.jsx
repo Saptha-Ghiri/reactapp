@@ -17,6 +17,7 @@ import DonorNotifications from "./DonorNotifications"; // Add this import
 import Game from "./Game";
 import Res from "./Res";
 import Index from "./Index";
+import RecipeFinder from "./RecipeFinder";
 
 // Protected Route Component
 const ProtectedRoute = ({ element }) => {
@@ -52,6 +53,8 @@ const App = () => {
         <Route path="/index" element={<Index />} />
         <Route path="/" element={<Index />} />
 
+        <Route path="/recipe" element={<RecipeFinder />} />
+        <Route path="/recipe/:id" element={<RecipeFinder />} />
 
 
         <Route path="*" element={<NotFound />} />
