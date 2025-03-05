@@ -173,11 +173,7 @@ const RecipeFinder = () => {
       setLoading(true);
 
       // Create a query to get recipes, ordered by title, limited to 10
-      const recipesQuery = query(
-        collection(db, "recipes"),
-        orderBy("title"),
-        limit(10)
-      );
+      const recipesQuery = query(collection(db, "recipes"), orderBy("title"));
 
       // Get the documents
       const querySnapshot = await getDocs(recipesQuery);
@@ -501,8 +497,13 @@ const RecipeFinder = () => {
 };
 
 const RecipeCard = ({ recipe }) => {
-  // Add null check for recipe
   if (!recipe) return null;
+
+  // Determine the title color based on diet type
+  const titleColor =
+    recipe.diet?.toLowerCase() === "vegetarian"
+      ? "text-green-600"
+      : "text-red-600";
 
   return (
     <div className="border rounded p-4 shadow-sm hover:shadow-md transition-shadow">
@@ -518,7 +519,7 @@ const RecipeCard = ({ recipe }) => {
         />
       </div>
       <Link to={`/recipe/${recipe.id}`}>
-        <h3 className="font-bold text-lg text-red-700 hover:text-red-900">
+        <h3 className={`font-bold text-lg ${titleColor} hover:underline`}>
           {recipe.title || "Untitled Recipe"}
         </h3>
       </Link>
@@ -611,6 +612,11 @@ const RecipeDetail = ({ id }) => {
     <li>No instructions available</li>
   );
 
+  const titleColor =
+    recipe.diet?.toLowerCase() === "vegetarian"
+      ? "text-green-600"
+      : "text-red-600";
+
   return (
     <div className="recipe-detail">
       <Link
@@ -621,7 +627,8 @@ const RecipeDetail = ({ id }) => {
       </Link>
 
       <div className="mb-6">
-        <h2 className="text-3xl font-bold mb-4 text-red-700">
+        {/* Apply dynamic color to the title */}
+        <h2 className={`text-3xl font-bold mb-4 ${titleColor}`}>
           {recipe.title || "Untitled Recipe"}
         </h2>
 
@@ -647,7 +654,9 @@ const RecipeDetail = ({ id }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
           <div className="mb-6 bg-gray-50 p-4 rounded-lg">
-            <h3 className="text-xl font-semibold mb-3 text-red-700">Details</h3>
+            <h3 className={`text-xl font-semibold mb-3 ${titleColor}`}>
+              Details
+            </h3>
             <div className="grid grid-cols-2 gap-2">
               <p>
                 <strong>Cuisine:</strong> {recipe.cuisine || "Not specified"}
@@ -666,7 +675,7 @@ const RecipeDetail = ({ id }) => {
           </div>
 
           <div className="bg-gray-50 p-4 rounded-lg">
-            <h3 className="text-xl font-semibold mb-3 text-red-700">
+            <h3 className={`text-xl font-semibold mb-3 ${titleColor}`}>
               Ingredients
             </h3>
             <ul className="list-disc pl-5 space-y-1">{ingredientsList}</ul>
@@ -674,7 +683,7 @@ const RecipeDetail = ({ id }) => {
         </div>
 
         <div className="bg-gray-50 p-4 rounded-lg">
-          <h3 className="text-xl font-semibold mb-3 text-red-700">
+          <h3 className={`text-xl font-semibold mb-3 ${titleColor}`}>
             Instructions
           </h3>
           <ol className="list-decimal pl-5 space-y-2">{instructionsList}</ol>
