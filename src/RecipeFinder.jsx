@@ -1,17 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { db, storage } from "../firebase/config";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  where,
-  orderBy,
-  limit,
-  startAfter,
-} from "firebase/firestore";
 
 const RecipeFinder = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,9 +7,10 @@ const RecipeFinder = () => {
   const [recipes, setRecipes] = useState([]);
   const [filteredRecipes, setFilteredRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [lastVisible, setLastVisible] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const { id } = useParams();
+  const recipesPerPage = 10;
 
   // Filter states
   const [filters, setFilters] = useState({
@@ -40,11 +29,56 @@ const RecipeFinder = () => {
   // Toggle for filter visibility
   const [showFilters, setShowFilters] = useState(false);
 
-  // Load initial recipes on component mount
+  // Load recipes from JSON file on component mount
   useEffect(() => {
-    fetchInitialRecipes();
-    fetchFilterOptions();
+    fetchRecipesFromJson();
   }, []);
+
+  // Fetch recipes from the JSON file
+  const fetchRecipesFromJson = async () => {
+    try {
+      setLoading(true);
+
+      // Fetch the recipes.json file
+      const response = await fetch("/recipes.json");
+      if (!response.ok) {
+        throw new Error("Failed to fetch recipes.json");
+      }
+
+      const recipesData = await response.json();
+
+      setRecipes(recipesData);
+      setFilteredRecipes(recipesData);
+
+      // Extract filter options
+      extractFilterOptions(recipesData);
+
+      setLoading(false);
+    } catch (error) {
+      console.error("Error loading recipes from JSON:", error);
+      setLoading(false);
+    }
+  };
+
+  // Extract unique filter options from the loaded data
+  const extractFilterOptions = (recipesData) => {
+    // Extract unique values for each filter category
+    const diets = new Set();
+    const cuisines = new Set();
+    const courses = new Set();
+
+    recipesData.forEach((recipe) => {
+      if (recipe.diet) diets.add(recipe.diet);
+      if (recipe.cuisine) cuisines.add(recipe.cuisine);
+      if (recipe.course) courses.add(recipe.course);
+    });
+
+    setFilterOptions({
+      diet: Array.from(diets).sort(),
+      cuisine: Array.from(cuisines).sort(),
+      course: Array.from(courses).sort(),
+    });
+  };
 
   // Parse input into individual ingredients
   const parseIngredients = (input) => {
@@ -133,114 +167,11 @@ const RecipeFinder = () => {
       }
 
       setFilteredRecipes(filtered);
+      setCurrentPage(1); // Reset to first page when search/filter changes
+      setHasMore(filtered.length > recipesPerPage);
       setLoading(false);
     } catch (error) {
       console.error("Error searching recipes:", error);
-      setLoading(false);
-    }
-  };
-
-  // Fetch filter options from Firestore
-  const fetchFilterOptions = async () => {
-    try {
-      const recipesSnapshot = await getDocs(collection(db, "recipes"));
-
-      // Extract unique values for each filter category
-      const diets = new Set();
-      const cuisines = new Set();
-      const courses = new Set();
-
-      recipesSnapshot.forEach((doc) => {
-        const data = doc.data();
-        if (data.diet) diets.add(data.diet);
-        if (data.cuisine) cuisines.add(data.cuisine);
-        if (data.course) courses.add(data.course);
-      });
-
-      setFilterOptions({
-        diet: Array.from(diets).sort(),
-        cuisine: Array.from(cuisines).sort(),
-        course: Array.from(courses).sort(),
-      });
-    } catch (error) {
-      console.error("Error fetching filter options:", error);
-    }
-  };
-
-  // Fetch initial set of recipes from Firestore
-  const fetchInitialRecipes = async () => {
-    try {
-      setLoading(true);
-
-      // Create a query to get recipes, ordered by title, limited to 10
-      const recipesQuery = query(collection(db, "recipes"), orderBy("title"));
-
-      // Get the documents
-      const querySnapshot = await getDocs(recipesQuery);
-
-      // Check if we have more recipes to load
-      if (querySnapshot.docs.length === 0) {
-        setHasMore(false);
-      } else {
-        // Save the last visible document for pagination
-        setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
-      }
-
-      // Extract the data from the documents
-      const recipesData = querySnapshot.docs.map((doc) => {
-        return { id: doc.id, ...doc.data() };
-      });
-
-      setRecipes(recipesData);
-      setFilteredRecipes(recipesData);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error loading recipes:", error);
-      setLoading(false);
-    }
-  };
-
-  // Fetch more recipes (pagination)
-  const fetchMoreRecipes = async () => {
-    if (!lastVisible) return;
-
-    try {
-      setLoading(true);
-
-      // Create a query to get more recipes, starting after the last visible document
-      const recipesQuery = query(
-        collection(db, "recipes"),
-        orderBy("title"),
-        startAfter(lastVisible),
-        limit(10)
-      );
-
-      // Get the documents
-      const querySnapshot = await getDocs(recipesQuery);
-
-      // Check if we have more recipes to load
-      if (querySnapshot.docs.length === 0) {
-        setHasMore(false);
-      } else {
-        // Save the last visible document for pagination
-        setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
-      }
-
-      // Extract the data from the documents
-      const recipesData = querySnapshot.docs.map((doc) => {
-        return { id: doc.id, ...doc.data() };
-      });
-
-      // Add the new recipes to the existing ones
-      const updatedRecipes = [...recipes, ...recipesData];
-      setRecipes(updatedRecipes);
-
-      // Apply current search and filters to the new combined list
-      performSearch(searchIngredients);
-
-      setLoading(false);
-    } catch (error) {
-      console.error("Error loading more recipes:", error);
       setLoading(false);
     }
   };
@@ -268,6 +199,8 @@ const RecipeFinder = () => {
     } else {
       // Otherwise show all recipes
       setFilteredRecipes(recipes);
+      setCurrentPage(1);
+      setHasMore(recipes.length > recipesPerPage);
     }
   };
 
@@ -280,6 +213,16 @@ const RecipeFinder = () => {
       course: "",
     });
     setFilteredRecipes(recipes);
+    setCurrentPage(1);
+    setHasMore(recipes.length > recipesPerPage);
+  };
+
+  // Load more recipes (pagination for client-side)
+  const loadMoreRecipes = () => {
+    setCurrentPage(currentPage + 1);
+    if ((currentPage + 1) * recipesPerPage >= filteredRecipes.length) {
+      setHasMore(false);
+    }
   };
 
   // Handle Enter key press
@@ -288,6 +231,12 @@ const RecipeFinder = () => {
       e.preventDefault(); // Prevent form submission
       addIngredient();
     }
+  };
+
+  // Get the current page of recipes
+  const getCurrentPageRecipes = () => {
+    const endIndex = currentPage * recipesPerPage;
+    return filteredRecipes.slice(0, endIndex);
   };
 
   if (loading && recipes.length === 0) {
@@ -461,7 +410,7 @@ const RecipeFinder = () => {
       </div>
 
       {id ? (
-        <RecipeDetail id={id} />
+        <RecipeDetail id={id} recipes={recipes} />
       ) : (
         <>
           <h2 className="text-xl font-semibold mb-4">
@@ -470,16 +419,16 @@ const RecipeFinder = () => {
           {filteredRecipes.length > 0 ? (
             <>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {filteredRecipes.map((recipe) => (
+                {getCurrentPageRecipes().map((recipe) => (
                   <RecipeCard key={recipe.id} recipe={recipe} />
                 ))}
               </div>
 
-              {hasMore && filteredRecipes.length >= recipes.length && (
+              {hasMore && (
                 <div className="text-center mt-8">
                   <button
                     className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded"
-                    onClick={fetchMoreRecipes}
+                    onClick={loadMoreRecipes}
                     disabled={loading}
                   >
                     {loading ? "Loading..." : "Load More Recipes"}
@@ -544,33 +493,21 @@ const RecipeCard = ({ recipe }) => {
   );
 };
 
-const RecipeDetail = ({ id }) => {
-  // The RecipeDetail component remains unchanged
+const RecipeDetail = ({ id, recipes }) => {
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch the specific recipe by ID
-    const fetchRecipe = async () => {
-      try {
-        setLoading(true);
-
-        // Get the recipe document
-        const recipeDoc = await getDoc(doc(db, "recipes", id));
-
-        if (recipeDoc.exists()) {
-          setRecipe({ id: recipeDoc.id, ...recipeDoc.data() });
-        }
-
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching recipe:", error);
-        setLoading(false);
-      }
+    // Find the recipe by ID in the recipes array
+    const findRecipe = () => {
+      setLoading(true);
+      const foundRecipe = recipes.find((r) => r.id === id);
+      setRecipe(foundRecipe || null);
+      setLoading(false);
     };
 
-    fetchRecipe();
-  }, [id]);
+    findRecipe();
+  }, [id, recipes]);
 
   if (loading) {
     return <div className="text-center py-8">Loading recipe details...</div>;
