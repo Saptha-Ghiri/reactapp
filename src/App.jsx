@@ -18,6 +18,8 @@ import Game from "./Game";
 import Res from "./Res";
 import Index from "./Index";
 import RecipeFinder from "./RecipeFinder";
+import QRCodeGenerator from "./QRCodeGenerator";
+import QRScanner from "./QRScanner";
 
 // Protected Route Component
 const ProtectedRoute = ({ element }) => {
@@ -56,8 +58,12 @@ const App = () => {
         <Route path="/recipe" element={<RecipeFinder />} />
         <Route path="/recipe/:id" element={<RecipeFinder />} />
 
+        <Route path="/qrscan" element={<QRScanner />} />
+        <Route path="/qrgen" element={<QRCodeGenerator />} />
 
+        <Route path="/qrgen" element={<QRCodeGenerator />} />
         <Route path="*" element={<NotFound />} />
+
       </Routes>
     </Router>
   );
