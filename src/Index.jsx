@@ -8,7 +8,7 @@ const LandingPage = () => {
 
       <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-blue-900 mb-4">Give Hope</h1>
+          <h1 className="text-4xl font-bold text-blue-900 mb-4">Feeding Future</h1>
           <p className="text-xl text-gray-600 mb-8">
             Connect food donors with those in need
           </p>

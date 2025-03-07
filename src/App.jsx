@@ -20,7 +20,8 @@ import Index from "./Index";
 import RecipeFinder from "./RecipeFinder";
 import QRCodeGenerator from "./QRCodeGenerator";
 import QRScanner from "./QRScanner";
-
+import Display from "./Display";
+Display;
 // Protected Route Component
 const ProtectedRoute = ({ element }) => {
   const isAuthenticated = localStorage.getItem("user"); // Check if user is logged in
@@ -62,8 +63,9 @@ const App = () => {
         <Route path="/qrgen" element={<QRCodeGenerator />} />
 
         <Route path="/qrgen" element={<QRCodeGenerator />} />
-        <Route path="*" element={<NotFound />} />
+        <Route path="/display" element={<Display />} />
 
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
-  Heart,
+  Soup,
   HandHeart,
   GamepadIcon,
   Bell,
@@ -77,8 +77,8 @@ const Navbar = () => {
         <div className="flex items-center justify-between">
           {/* Logo/Brand */}
           <div className="text-xl font-bold text-white flex items-center">
-            <Heart className="mr-2" />
-            GiveHope
+            <Soup className="mr-2" />
+            FeedingFuture
           </div>
 
           {/* Mobile Menu Button */}
