@@ -438,13 +438,23 @@ const FoodReceiver = () => {
 
   const fetchDonations = async () => {
     try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (!user?.uid) {
+        setError("Please login to view available donations");
+        return;
+      }
+
       const querySnapshot = await getDocs(collection(db, "food items"));
       const availableDonations = querySnapshot.docs
         .map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }))
-        .filter((donation) => donation.status === "available");
+        .filter(
+          (donation) =>
+            // Only show donations that are available AND not created by the current user
+            donation.status === "available" && donation.userId !== user.uid
+        );
       setDonations(availableDonations);
     } catch (err) {
       setError("Failed to load donations");
