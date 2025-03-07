@@ -362,16 +362,29 @@ const FoodReceiver = () => {
   const [processingAction, setProcessingAction] = useState(false);
 
   // Custom icon for food markers
-  const foodIcon = L.icon({
-    iconUrl:
-      "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
-    shadowUrl:
-      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41],
-  });
+  const createFoodIcon = (imageUrl) => {
+    return L.divIcon({
+      className: "custom-food-icon",
+      html: `
+         <div class="relative group">
+           <div class="w-12 h-12 rounded-full border-4 border-white shadow-lg overflow-hidden bg-white">
+             <img 
+               src="${imageUrl || "/placeholder-food-image.png"}" 
+               alt="Food" 
+               class="w-full h-full object-cover"
+               onerror="this.src='/placeholder-food-image.png'"
+             />
+           </div>
+           <div class="absolute -bottom-1 left-1/2 transform -translate-x-1/2">
+             <div class="w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-white"></div>
+           </div>
+         </div>
+       `,
+      iconSize: [48, 48],
+      iconAnchor: [24, 48],
+      popupAnchor: [0, -48],
+    });
+  };
 
   const subscribeToNotifications = () => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -620,12 +633,23 @@ const FoodReceiver = () => {
                 <Marker
                   key={donation.id}
                   position={[donation.latitude, donation.longitude]}
-                  icon={foodIcon}
+                  icon={createFoodIcon(donation.imageUrl)}
                 >
                   <Popup>
                     <div className="max-w-xs">
                       <h3 className="font-bold">{donation.foodName}</h3>
-                      <p>Quantity: {donation.quantity}</p>
+                      <p>
+                        <span className="font-medium">Quantity:</span>{" "}
+                        {donation.quantity}
+                      </p>
+                      <p>
+                        <span className="font-medium">Location:</span>{" "}
+                        {donation.pickupLocation}
+                      </p>
+                      <p>
+                        <span className="font-medium">Expires:</span>{" "}
+                        {new Date(donation.expiryDate).toLocaleString()}
+                      </p>
                       <p>Type: {donation.foodType}</p>
                       <button
                         onClick={() => handleAccept(donation.id)}

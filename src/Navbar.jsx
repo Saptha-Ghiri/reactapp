@@ -130,7 +130,7 @@ const Navbar = () => {
                         className="block px-4 py-2 text-gray-700 hover:bg-pink-50 flex items-center"
                       >
                         <User2 className="mr-2 h-4 w-4" />
-                        User Posts
+                        User Donations
                       </a>
                       <a
                         href="/notifications"
@@ -294,7 +294,7 @@ const Navbar = () => {
                         onClick={handleNavigation}
                       >
                         <User2 className="mr-2 h-4 w-4" />
-                        User Posts
+                        User Donations
                       </a>
                       <a
                         href="/notifications"
