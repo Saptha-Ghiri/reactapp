@@ -14,6 +14,7 @@ import {
   UserPlus,
   Menu,
   X,
+  ChefHat,
 } from "lucide-react";
 
 const Navbar = () => {
@@ -165,6 +166,15 @@ const Navbar = () => {
                     </div>
                   )}
                 </div>
+
+                {/* Map Button */}
+                <a
+                  href="/recipe"
+                  className="flex items-center text-white hover:text-pink-200 transition-colors"
+                >
+                  <ChefHat className="mr-1" />
+                  <span>Cookery</span>
+                </a>
 
                 {/* Game Dropdown */}
                 <div className="relative">
@@ -328,6 +338,16 @@ const Navbar = () => {
                     </div>
                   )}
                 </div>
+
+                {/* Map Button */}
+                <a
+                  href="/recipe"
+                  className="flex items-center text-gray-700 hover:text-pink-500 transition-colors py-2"
+                  onClick={handleNavigation}
+                >
+                  <ChefHat className="mr-2" />
+                  <span>Cookery</span>
+                </a>
 
                 {/* Game Section */}
                 <div>
