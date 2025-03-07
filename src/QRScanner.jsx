@@ -42,14 +42,13 @@ const QRScanner = () => {
     }
 
     // Listen to motor status changes from the realtime database
-    const motorStatusRef = ref(rtdb, "motorStatus");
+    const motorStatusRef = ref(rtdb);
     const unsubscribe = onValue(motorStatusRef, (snapshot) => {
       const data = snapshot.val();
-      if (data) {
-        setMotorStatus(data.status);
+      if (data && data.motorStatus) {
+        setMotorStatus(data.motorStatus);
       }
     });
-
     return () => {
       // Clean up scanner when component unmounts
       if (scannerRef.current) {
@@ -65,7 +64,7 @@ const QRScanner = () => {
 
   const onScanSuccess = (decodedText) => {
     const currentTime = Date.now();
-  
+
     // Prevent processing the same QR code too quickly
     if (
       decodedText === lastProcessedRef.current &&
@@ -74,38 +73,37 @@ const QRScanner = () => {
       console.log("Duplicate scan ignored:", decodedText);
       return;
     }
-  
+
     // Prevent multiple simultaneous processing
     if (processingRef.current) {
       console.log("Processing already in progress. Ignoring scan.");
       return;
     }
-  
+
     processingRef.current = true;
     lastProcessedRef.current = decodedText;
     lastScanTimeRef.current = currentTime;
-  
+
     console.log("QR code scanned:", decodedText);
     setLastScanned(decodedText);
-  
+
     // Use functional state update to ensure correct toggling
     setMotorStatus((prevStatus) => {
       const newMotorStatus = prevStatus === "open" ? "closed" : "open";
-  
+
       console.log(`Toggling motor status: ${prevStatus} → ${newMotorStatus}`);
-  
+
       // Update Firestore and Realtime Database
       updateBothDatabases(decodedText, newMotorStatus);
-  
+
       return newMotorStatus;
     });
-  
+
     // **Delay processing reset to avoid rapid double triggers**
     setTimeout(() => {
       processingRef.current = false;
     }, 1000);
   };
-  
 
   const onScanError = (error) => {
     // Only log actual errors, not "code not found" which is normal when no QR is in view
@@ -128,11 +126,9 @@ const QRScanner = () => {
       });
 
       // Update Realtime Database for motor control
-      const motorRef = ref(rtdb, "motorStatus");
+      const motorRef = ref(rtdb);
       await set(motorRef, {
-        status: newStatus,
-        lastUpdated: timestamp.toISOString(),
-        updatedBy: documentId,
+        motorStatus: newStatus,
       });
 
       // Add to scan history
@@ -187,7 +183,7 @@ const QRScanner = () => {
           fontWeight: "bold",
         }}
       >
-        Motor is currently: {motorStatus.toUpperCase()}
+        Motor is currently: {motorStatus}
       </div>
 
       <div

@@ -5,11 +5,11 @@
 # from firebase_admin import db
 # import json
 
-# # Firebase setup - using your specific Firebase project
-# cred = credentials.Certificate('predict-sih-firebase-credentials.json')  # You'll need to generate this from Firebase console
-# firebase_admin.initialize_app(cred, {
-#     'databaseURL': 'https://predict-sih-default-rtdb.firebaseio.com'  # Your actual database URL
-# })
+# Firebase setup - using your specific Firebase project
+cred = credentials.Certificate('predict-sih-firebase-credentials.json')  # You'll need to generate this from Firebase console
+firebase_admin.initialize_app(cred, {
+    'databaseURL': 'https://predict-sih-default-rtdb.firebaseio.com'  # Your actual database URL
+})
 
 # # Reference to your database
 # ref = db.reference('foodMonitor')
@@ -257,3 +257,123 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import serial
+import json
+import time
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import db
+import threading
+
+# Firebase configuration
+cred = credentials.Certificate('predict-sih-firebase-credentials.json')  # You'll need to generate this from Firebase console
+firebase_admin.initialize_app(cred, {
+    'databaseURL': 'https://predict-sih-default-rtdb.firebaseio.com'  # Your actual database URL
+})
+
+# Serial configuration
+SERIAL_PORT = '/dev/ttyUSB0'  # Change to your Arduino's serial port (e.g., 'COM3' on Windows)
+BAUD_RATE = 115200
+
+# Reference to your Firebase database
+ref = db.reference('arduino_data')
+command_ref = db.reference('arduino_control/servo_command')
+
+def read_serial_data():
+    """Read and process data from Arduino"""
+    try:
+        ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=5)
+        print(f"Connected to Arduino on {SERIAL_PORT}")
+        
+        while True:
+            try:
+                # Read a line from the serial port
+                line = ser.readline().decode('utf-8').strip()
+                
+                if line:
+                    # Parse the JSON data from Arduino
+                    try:
+                        data = json.loads(line)
+                        print(f"Received data: {data}")
+                        
+                        # Update Firebase with the received data
+                        update_firebase(data)
+                    except json.JSONDecodeError as e:
+                        print(f"JSON parsing error: {e}")
+                        print(f"Received invalid data: {line}")
+            except Exception as e:
+                print(f"Error reading from serial: {e}")
+                time.sleep(1)
+    except serial.SerialException as e:
+        print(f"Failed to connect to Arduino: {e}")
+        time.sleep(5)  # Wait before retrying
+        read_serial_data()  # Recursively retry connection
+
+def update_firebase(data):
+    """Update Firebase with the sensor data"""
+    try:
+        # Add timestamp
+        data['timestamp'] = {'.sv': 'timestamp'}
+        
+        # Push data to Firebase
+        ref.push().set(data)
+        print("Data uploaded to Firebase successfully")
+    except Exception as e:
+        print(f"Firebase update error: {e}")
+
+def listen_for_commands():
+    """Listen for commands from Firebase and send to Arduino"""
+    try:
+        ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=5)
+        
+        def on_command_change(event):
+            """Firebase callback when servo command is updated"""
+            try:
+                command = event.data
+                if command:
+                    print(f"Received command from Firebase: {command}")
+                    
+                    # Send the command to Arduino
+                    if command == "open":
+                        ser.write(b'O')
+                        print("Sent OPEN command to Arduino")
+                    elif command == "close":
+                        ser.write(b'C')
+                        print("Sent CLOSE command to Arduino")
+                    
+                    # Reset the command in Firebase
+                    command_ref.set("")
+            except Exception as e:
+                print(f"Error processing command: {e}")
+        
+        # Set up the listener for command changes
+        command_ref.listen(on_command_change)
+        
+    except serial.SerialException as e:
+        print(f"Failed to connect to Arduino for commands: {e}")
+        time.sleep(5)
+        listen_for_commands()  # Retry
+
+if __name__ == "__main__":
+    # Start command listener in a separate thread
+    command_thread = threading.Thread(target=listen_for_commands)
+    command_thread.daemon = True
+    command_thread.start()
+    
+    # Start reading serial data in the main thread
+    read_serial_data()
