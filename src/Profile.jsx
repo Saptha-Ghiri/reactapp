@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { QRCodeCanvas } from "qrcode.react";
 import { db, doc, getDoc } from "../firebase/config";
 import { useNavigate } from "react-router-dom";
-import { Download, User, QrCode } from "lucide-react";
+import { Download, User, QrCode, Utensils } from "lucide-react";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -130,13 +130,23 @@ const Profile = () => {
 
             <p className="text-gray-500 mt-4 text-sm">Document ID: {user.id}</p>
 
-            <button
-              onClick={downloadQRCode}
-              className="mt-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-2 px-6 rounded-lg flex items-center justify-center mx-auto transform hover:scale-[1.02] transition-all"
-            >
-              <Download size={18} className="mr-2" />
-              Download QR Code
-            </button>
+            <div className="flex flex-col gap-4 mt-4">
+              <button
+                onClick={downloadQRCode}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-2 px-6 rounded-lg flex items-center justify-center mx-auto transform hover:scale-[1.02] transition-all"
+              >
+                <Download size={18} className="mr-2" />
+                Download QR Code
+              </button>
+
+              <button
+                onClick={() => navigate("/display")}
+                className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white py-2 px-6 rounded-lg flex items-center justify-center mx-auto transform hover:scale-[1.02] transition-all"
+              >
+                <Utensils size={18} className="mr-2" />
+                Food Monitor Display
+              </button>
+            </div>
           </div>
 
           <div className="border-t border-gray-200 pt-4 mt-4">
