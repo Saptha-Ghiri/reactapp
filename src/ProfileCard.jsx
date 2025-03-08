@@ -4,7 +4,7 @@ import { db, doc, getDoc } from "../firebase/config";
 import { useNavigate } from "react-router-dom";
 import { Download, User, QrCode, Utensils } from "lucide-react";
 
-const Profile = () => {
+const ProfileCard = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -144,7 +144,7 @@ const Profile = () => {
                 className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white py-2 px-6 rounded-lg flex items-center justify-center mx-auto transform hover:scale-[1.02] transition-all"
               >
                 <Utensils size={18} className="mr-2" />
-                Food Monitor Display
+                Food Monitor
               </button>
             </div>
           </div>
@@ -161,4 +161,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default ProfileCard;
