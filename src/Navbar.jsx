@@ -15,6 +15,7 @@ import {
   Menu,
   X,
   ChefHat,
+  UserRound,
 } from "lucide-react";
 
 const Navbar = () => {
@@ -211,6 +212,15 @@ const Navbar = () => {
                   )}
                 </div>
 
+                {/* Profile Button */}
+                <a
+                  href="/profile"
+                  className="flex items-center text-white hover:text-pink-200 transition-colors"
+                >
+                  <UserRound className="mr-1" />
+                  <span>Profile</span>
+                </a>
+
                 {/* Logout Button */}
                 <button
                   onClick={handleLogout}
@@ -392,7 +402,15 @@ const Navbar = () => {
                     </div>
                   )}
                 </div>
-
+                {/* Profile Button */}
+                <a
+                  href="/profile"
+                  className="flex items-center text-gray-700 hover:text-pink-500 transition-colors py-2"
+                  onClick={handleNavigation}
+                >
+                  <UserRound className="mr-2" />
+                  <span>Profile</span>
+                </a>
                 {/* Logout Button */}
                 <button
                   onClick={handleLogout}
