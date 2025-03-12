@@ -22,6 +22,7 @@ import QRCodeGenerator from "./QRCodeGenerator";
 import QRScanner from "./QRScanner";
 import Display from "./Display";
 import ProfileCard from "./ProfileCard";
+import Loc from "./loc";
 
 // Protected Route Component
 const ProtectedRoute = ({ element }) => {
@@ -66,6 +67,8 @@ const App = () => {
         <Route path="/qrgen" element={<QRCodeGenerator />} />
         <Route path="/display" element={<Display />} />
         <Route path="/profile" element={<ProfileCard />} />
+        <Route path="/loc" element={<Loc />} />
+
 
         <Route path="*" element={<NotFound />} />
       </Routes>
