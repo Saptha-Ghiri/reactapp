@@ -9,7 +9,7 @@ const Loc = () => {
     {"name": "Food Haven", "location": [13.010610, 80.220119]},  
     {"name": "Spice Hub", "location": [12.998234, 80.192404]},  
     {"name": "Urban Diner", "location": [12.953598, 80.118532]},  
-    {"name": "Green Eats", "location": [12.922068, 80.183565]},  
+    {"name": "Green Eats", "location": [12.922067, 80.183565]},  
   ];
 
   const homes = [
