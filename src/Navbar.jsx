@@ -16,6 +16,7 @@ import {
   X,
   ChefHat,
   UserRound,
+  Rows3,
 } from "lucide-react";
 
 const Navbar = () => {
@@ -113,6 +114,15 @@ const Navbar = () => {
                   <span>Map</span>
                 </a>
 
+                  {/* Food Station Button */}
+                  <a
+                  href="/food-station"
+                  className="flex items-center text-white hover:text-pink-200 transition-colors"
+                >
+                  <Rows3 className="mr-1" />
+                  <span>Food Station</span>
+                </a>
+
                 {/* Donor Dropdown */}
                 <div className="relative">
                   <button
@@ -168,7 +178,7 @@ const Navbar = () => {
                   )}
                 </div>
 
-                {/* Map Button */}
+                {/* Recipe Button */}
                 <a
                   href="/recipe"
                   className="flex items-center text-white hover:text-pink-200 transition-colors"
@@ -176,6 +186,8 @@ const Navbar = () => {
                   <ChefHat className="mr-1" />
                   <span>Cookery</span>
                 </a>
+                
+                
 
                 {/* Game Dropdown */}
                 <div className="relative">
@@ -277,6 +289,16 @@ const Navbar = () => {
                 >
                   <MapPin className="mr-2" />
                   <span>Map</span>
+                </a>
+
+                {/* Food Station Button */}
+                <a
+                  href="/food-station"
+                  className="flex items-center text-gray-700 hover:text-pink-500 transition-colors py-2"
+                  onClick={handleNavigation}
+                >
+                  <Rows3 className="mr-2" />
+                  <span>Food Station</span>
                 </a>
 
                 {/* Donor Section */}

@@ -23,7 +23,9 @@ import QRScanner from "./QRScanner";
 import Display from "./Display";
 import ProfileCard from "./ProfileCard";
 import Loc from "./Loc";
-
+import FoodStation from "./FoodStation";
+import Test from "./Test";
+import FoodStationDetail from "./FoodStationDetail";
 // Protected Route Component
 const ProtectedRoute = ({ element }) => {
   const isAuthenticated = localStorage.getItem("user"); // Check if user is logged in
@@ -67,7 +69,11 @@ const App = () => {
         <Route path="/qrgen" element={<QRCodeGenerator />} />
         <Route path="/display" element={<Display />} />
         <Route path="/profile" element={<ProfileCard />} />
+        <Route path="/food-station" element={<FoodStation />} />
+        <Route path="/food-station/:stationId" element={<FoodStationDetail />} />
+
         <Route path="/loc" element={<Loc />} />
+        <Route path="/test" element={<Test  />} />
 
         <Route path="*" element={<NotFound />} />
       </Routes>
