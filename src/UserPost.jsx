@@ -24,6 +24,7 @@ import {
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import ChatButton from "./ChatButton";
 
 const createAnimatedIcon = () => {
   const customIcon = L.divIcon({
@@ -660,6 +661,18 @@ function UserPost() {
                         </p>
                       )}
                     </div>
+
+                    {post.acceptedBy && (
+                      <div className="mt-2">
+                        <p className="text-blue-600 font-medium">
+                          This donation has been accepted
+                        </p>
+                        <ChatButton
+                          donationId={post.id}
+                          receiverId={post.acceptedBy}
+                        />
+                      </div>
+                    )}
 
                     <div className="pt-2 flex space-x-2">
                       <button

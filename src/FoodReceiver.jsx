@@ -346,11 +346,14 @@ import {
   query,
   where,
   onSnapshot,
+  deleteDoc  // Add this import
+
 } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { ChatButton } from "./ChatButton";
 
 const FoodReceiver = () => {
   const [donations, setDonations] = useState([]);
@@ -519,6 +522,63 @@ const FoodReceiver = () => {
     }
   };
 
+  const deleteAssociatedChat = async (donationId) => {
+    try {
+      // Find any conversations related to this donation
+      const conversationsQuery = query(
+        collection(db, "conversations"),
+        where("donationId", "==", donationId)
+      );
+
+      const conversationSnapshots = await getDocs(conversationsQuery);
+
+      // Delete each conversation and its messages
+      const deletePromises = conversationSnapshots.docs.map(
+        async (conversationDoc) => {
+          const conversationId = conversationDoc.id;
+
+          // First delete all messages in the conversation
+          const messagesQuery = collection(
+            db,
+            "conversations",
+            conversationId,
+            "messages"
+          );
+          const messageSnapshots = await getDocs(messagesQuery);
+
+          // Delete each message
+          const messageDeletePromises = messageSnapshots.docs.map(
+            (messageDoc) =>
+              deleteDoc(
+                doc(
+                  db,
+                  "conversations",
+                  conversationId,
+                  "messages",
+                  messageDoc.id
+                )
+              )
+          );
+
+          // Wait for all messages to be deleted
+          await Promise.all(messageDeletePromises);
+
+          // Then delete the conversation itself
+          return deleteDoc(doc(db, "conversations", conversationId));
+        }
+      );
+
+      // Wait for all conversations to be deleted
+      await Promise.all(deletePromises);
+
+      console.log(
+        `Successfully deleted all chats associated with donation: ${donationId}`
+      );
+    } catch (error) {
+      console.error("Error deleting associated chats:", error);
+    }
+  };
+
   const handleCancel = async (donationId) => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (!user?.uid) {
@@ -526,7 +586,11 @@ const FoodReceiver = () => {
       return;
     }
 
-    if (!window.confirm("Are you sure you want to cancel this acceptance?")) {
+    if (
+      !window.confirm(
+        "Are you sure you want to cancel this acceptance? This will also delete any chat conversations."
+      )
+    ) {
       return;
     }
 
@@ -544,6 +608,7 @@ const FoodReceiver = () => {
         throw new Error("You can only cancel your own accepted donations");
       }
 
+      // Update the donation status
       await updateDoc(donationRef, {
         status: "available",
         acceptedBy: null,
@@ -552,6 +617,9 @@ const FoodReceiver = () => {
         cancellationReason: "Cancelled by receiver",
         cancelledAt: new Date().toISOString(),
       });
+
+      // Delete any associated chat conversations
+      await deleteAssociatedChat(donationId);
 
       setAcceptedDonations((prev) => prev.filter((d) => d.id !== donationId));
       alert("Donation acceptance cancelled successfully!");
@@ -658,6 +726,11 @@ const FoodReceiver = () => {
                       >
                         {processingAction ? "Processing..." : "Accept"}
                       </button>
+                      <ChatButton
+                        donationId={donation.id}
+                        donorId={donation.userId}
+                        className="flex-1"
+                      />
                     </div>
                   </Popup>
                 </Marker>
@@ -747,6 +820,14 @@ const FoodReceiver = () => {
                       {donation.pickupLocation}
                     </p>
                   </div>
+                  {/* Add ChatButton below the donation details */}
+                  <div className="mt-3">
+                    <ChatButton
+                      donationId={donation.id}
+                      donorId={donation.userId}
+                    />
+                  </div>
+
                   <button
                     onClick={() => handleCancel(donation.id)}
                     disabled={processingAction}

@@ -28,7 +28,11 @@ import Test from "./Test";
 import FoodStationDetail from "./FoodStationDetail";
 import FoodStationInteraction from "./FoodStationInteraction";
 import UserReceivedFoods from "./UserReceivedFoods";
+// 6. Add a new route in your Routes file:
+import ChatPage from "./ChatPage";
+import ReceiverNotifications from "./ReceiverNotifications";
 
+// Add to your routes:
 // Protected Route Component
 const ProtectedRoute = ({ element }) => {
   const isAuthenticated = localStorage.getItem("user"); // Check if user is logged in
@@ -50,10 +54,13 @@ const App = () => {
           element={<ProtectedRoute element={<FoodReceiver />} />}
         />
         <Route
-          path="/notifications"
+          path="/donor-notifications"
           element={<ProtectedRoute element={<DonorNotifications />} />}
         />
-
+        <Route
+          path="/receiver-notifications"
+          element={<ProtectedRoute element={<ReceiverNotifications />} />}
+        />
         <Route path="/posts" element={<UserPost />} />
         <Route path="/login" element={<Login />} />
         <Route path="/map" element={<FoodMap />} />
@@ -62,6 +69,7 @@ const App = () => {
         <Route path="/res" element={<Res />} />
         <Route path="/index" element={<Index />} />
         <Route path="/" element={<Index />} />
+        <Route path="/chat" element={<ChatPage />} />
 
         <Route path="/recipe" element={<RecipeFinder />} />
         <Route path="/recipe/:id" element={<RecipeFinder />} />
@@ -73,7 +81,6 @@ const App = () => {
         <Route path="/userfoods" element={<UserFoods />} />
         <Route path="/userreceived" element={<UserReceivedFoods />} />
 
-        
         <Route path="/profile" element={<ProfileCard />} />
         <Route path="/food-station" element={<FoodStation />} />
         <Route

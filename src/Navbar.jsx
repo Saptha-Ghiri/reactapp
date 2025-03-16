@@ -17,7 +17,9 @@ import {
   ChefHat,
   UserRound,
   Rows3,
+  MessageCircle, // Add this import for the chat icon
 } from "lucide-react";
+import ChatNotification from "./ChatNotification"; // Add this import for the chat notification component
 
 const Navbar = () => {
   const [isDonorOpen, setIsDonorOpen] = useState(false);
@@ -114,8 +116,8 @@ const Navbar = () => {
                   <span>Map</span>
                 </a>
 
-                  {/* Food Station Button */}
-                  <a
+                {/* Food Station Button */}
+                <a
                   href="/food-station"
                   className="flex items-center text-white hover:text-pink-200 transition-colors"
                 >
@@ -144,7 +146,7 @@ const Navbar = () => {
                         User Donations
                       </a>
                       <a
-                        href="/notifications"
+                        href="/donor-notifications"
                         className="block px-4 py-2 text-gray-700 hover:bg-pink-50 flex items-center"
                       >
                         <Bell className="mr-2 h-4 w-4" />
@@ -174,6 +176,13 @@ const Navbar = () => {
                         <Gift className="mr-2 h-4 w-4" />
                         Receiver Donations
                       </a>
+                      <a
+                        href="/receiver-notifications"
+                        className="block px-4 py-2 text-gray-700 hover:bg-pink-50 flex items-center"
+                      >
+                        <Bell className="mr-2 h-4 w-4" />
+                        Notifications
+                      </a>
                     </div>
                   )}
                 </div>
@@ -187,8 +196,6 @@ const Navbar = () => {
                   <span>Cookery</span>
                 </a>
                 
-                
-
                 {/* Game Dropdown */}
                 <div className="relative">
                   <button
@@ -223,6 +230,14 @@ const Navbar = () => {
                     </div>
                   )}
                 </div>
+
+                {/* Chat Button - ADDED HERE */}
+                <a
+                  href="/chat"
+                  className="flex items-center text-white hover:text-pink-200 transition-colors relative"
+                >
+                  <ChatNotification />
+                </a>
 
                 {/* Profile Button */}
                 <a
@@ -329,7 +344,7 @@ const Navbar = () => {
                         User Donations
                       </a>
                       <a
-                        href="/notifications"
+                        href="/donor-notifications"
                         className="flex items-center text-gray-700 hover:text-pink-500 transition-colors py-2"
                         onClick={handleNavigation}
                       >
@@ -367,11 +382,19 @@ const Navbar = () => {
                         <Gift className="mr-2 h-4 w-4" />
                         Receiver Donations
                       </a>
+                      <a
+                        href="/receiver-notifications"
+                        className="flex items-center text-gray-700 hover:text-pink-500 transition-colors py-2"
+                        onClick={handleNavigation}
+                      >
+                        <Bell className="mr-2 h-4 w-4" />
+                        Notifications
+                      </a>
                     </div>
                   )}
                 </div>
 
-                {/* Map Button */}
+                {/* Recipe Button */}
                 <a
                   href="/recipe"
                   className="flex items-center text-gray-700 hover:text-pink-500 transition-colors py-2"
@@ -424,6 +447,20 @@ const Navbar = () => {
                     </div>
                   )}
                 </div>
+
+                {/* Chat Link - ADDED HERE */}
+                <a
+                  href="/chat"
+                  className="flex items-center text-gray-700 hover:text-pink-500 transition-colors py-2"
+                  onClick={handleNavigation}
+                >
+                  <div className="flex items-center">
+                    <MessageCircle className="mr-2" />
+                    <span>Messages</span>
+                  </div>
+                  <ChatNotification />
+                </a>
+
                 {/* Profile Button */}
                 <a
                   href="/profile"
@@ -433,6 +470,7 @@ const Navbar = () => {
                   <UserRound className="mr-2" />
                   <span>Profile</span>
                 </a>
+
                 {/* Logout Button */}
                 <button
                   onClick={handleLogout}
