@@ -346,8 +346,8 @@ import {
   query,
   where,
   onSnapshot,
-  deleteDoc  // Add this import
-
+  deleteDoc, // Add this import
+  addDoc,
 } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
@@ -363,6 +363,7 @@ const FoodReceiver = () => {
   const [rejectedDonations, setRejectedDonations] = useState([]);
   const [mapCenter, setMapCenter] = useState([13.07801, 80.268846]);
   const [processingAction, setProcessingAction] = useState(false);
+  const [completedDonations, setCompletedDonations] = useState([]);
 
   // Custom icon for food markers
   const createFoodIcon = (imageUrl) => {
@@ -421,6 +422,7 @@ const FoodReceiver = () => {
     );
   }, []);
 
+  // 1. Add 'completed' to the query to fetch completed donations too
   const subscribeToUserDonations = () => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (!user?.uid) return;
@@ -428,7 +430,7 @@ const FoodReceiver = () => {
     const q = query(
       collection(db, "food items"),
       where("acceptedBy", "==", user.uid),
-      where("status", "in", ["accepted", "rejected"])
+      where("status", "in", ["accepted", "rejected", "completed"])
     );
 
     return onSnapshot(
@@ -441,9 +443,11 @@ const FoodReceiver = () => {
 
         const accepted = userDonations.filter((d) => d.status === "accepted");
         const rejected = userDonations.filter((d) => d.status === "rejected");
+        const completed = userDonations.filter((d) => d.status === "completed");
 
         setAcceptedDonations(accepted);
         setRejectedDonations(rejected);
+        setCompletedDonations(completed); // Add this line and the state variable
       },
       (error) => {
         console.error("Error subscribing to donations:", error);
@@ -576,6 +580,70 @@ const FoodReceiver = () => {
       );
     } catch (error) {
       console.error("Error deleting associated chats:", error);
+    }
+  };
+
+  // 3. Add this new function to mark food as received
+  const handleFoodReceived = async (donationId) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user?.uid) {
+      alert("Please login to confirm food receipt");
+      return;
+    }
+
+    if (
+      !window.confirm(
+        "Do you confirm that you have received this food donation?"
+      )
+    ) {
+      return;
+    }
+
+    setProcessingAction(true);
+    try {
+      const donationRef = doc(db, "food items", donationId);
+      const donationDoc = await getDoc(donationRef);
+
+      if (!donationDoc.exists()) {
+        throw new Error("Donation not found");
+      }
+
+      const donationData = donationDoc.data();
+      if (donationData.acceptedBy !== user.uid) {
+        throw new Error(
+          "You can only confirm receipt for your accepted donations"
+        );
+      }
+
+      // Update the donation status to completed
+      await updateDoc(donationRef, {
+        status: "completed",
+        receivedAt: new Date().toISOString(),
+        receivedBy: user.uid,
+      });
+
+      // Create a notification for the donor
+      await addDoc(collection(db, "donor-notifications"), {
+        userId: donationData.userId,
+        foodItemId: donationId,
+        foodName: donationData.foodName,
+        receiverId: user.uid,
+        receiverContact: donationData.receiverContact || "Unknown",
+        status: "completed",
+        receivedAt: new Date().toISOString(),
+        read: false,
+        foodType: donationData.foodType,
+        quantity: donationData.quantity,
+        pickupLocation: donationData.pickupLocation,
+      });
+
+      setAcceptedDonations((prev) => prev.filter((d) => d.id !== donationId));
+      alert("Thank you for confirming! The donor has been notified.");
+    } catch (err) {
+      console.error("Error marking donation as received:", err);
+      alert(`Failed to mark as received: ${err.message}`);
+    } finally {
+      setProcessingAction(false);
     }
   };
 
@@ -827,6 +895,15 @@ const FoodReceiver = () => {
                       donorId={donation.userId}
                     />
                   </div>
+
+                  {/* Food Received Button - NEW */}
+                  <button
+                    onClick={() => handleFoodReceived(donation.id)}
+                    disabled={processingAction}
+                    className="mt-3 w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition duration-200 disabled:bg-gray-400"
+                  >
+                    {processingAction ? "Processing..." : "Food Received"}
+                  </button>
 
                   <button
                     onClick={() => handleCancel(donation.id)}

@@ -31,7 +31,8 @@ import UserReceivedFoods from "./UserReceivedFoods";
 // 6. Add a new route in your Routes file:
 import ChatPage from "./ChatPage";
 import ReceiverNotifications from "./ReceiverNotifications";
-
+import DonorHistory from "./DonorHistory";
+import ReceiverHistory from "./ReceiverHistory";
 // Add to your routes:
 // Protected Route Component
 const ProtectedRoute = ({ element }) => {
@@ -70,7 +71,8 @@ const App = () => {
         <Route path="/index" element={<Index />} />
         <Route path="/" element={<Index />} />
         <Route path="/chat" element={<ChatPage />} />
-
+        <Route path="/donor-history" element={<DonorHistory />} />
+        <Route path="/receiver-history" element={<ReceiverHistory />} />
         <Route path="/recipe" element={<RecipeFinder />} />
         <Route path="/recipe/:id" element={<RecipeFinder />} />
 

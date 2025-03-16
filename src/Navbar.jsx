@@ -18,6 +18,7 @@ import {
   UserRound,
   Rows3,
   MessageCircle, // Add this import for the chat icon
+  History, // Add this import
 } from "lucide-react";
 import ChatNotification from "./ChatNotification"; // Add this import for the chat notification component
 
@@ -152,6 +153,14 @@ const Navbar = () => {
                         <Bell className="mr-2 h-4 w-4" />
                         Notifications
                       </a>
+                      {/* Add this new link */}
+                      <a
+                        href="/donor-history"
+                        className="block px-4 py-2 text-gray-700 hover:bg-pink-50 flex items-center"
+                      >
+                        <History className="mr-2 h-4 w-4" />
+                        Donation History
+                      </a>
                     </div>
                   )}
                 </div>
@@ -183,6 +192,13 @@ const Navbar = () => {
                         <Bell className="mr-2 h-4 w-4" />
                         Notifications
                       </a>
+                      <a
+                        href="/receiver-history"
+                        className="block px-4 py-2 text-gray-700 hover:bg-pink-50 flex items-center"
+                      >
+                        <History className="mr-2 h-4 w-4" />
+                        Receipt History
+                      </a>
                     </div>
                   )}
                 </div>
@@ -195,7 +211,7 @@ const Navbar = () => {
                   <ChefHat className="mr-1" />
                   <span>Cookery</span>
                 </a>
-                
+
                 {/* Game Dropdown */}
                 <div className="relative">
                   <button
@@ -344,12 +360,20 @@ const Navbar = () => {
                         User Donations
                       </a>
                       <a
-                        href="/donor-notifications"
+                        href="/notifications"
                         className="flex items-center text-gray-700 hover:text-pink-500 transition-colors py-2"
                         onClick={handleNavigation}
                       >
                         <Bell className="mr-2 h-4 w-4" />
                         Notifications
+                      </a>
+                      <a
+                        href="/donor-history"
+                        className="flex items-center text-gray-700 hover:text-pink-500 transition-colors py-2"
+                        onClick={handleNavigation}
+                      >
+                        <History className="mr-2 h-4 w-4" />
+                        Donation History
                       </a>
                     </div>
                   )}
@@ -389,6 +413,14 @@ const Navbar = () => {
                       >
                         <Bell className="mr-2 h-4 w-4" />
                         Notifications
+                      </a>
+                      <a
+                        href="/receiver-history"
+                        className="flex items-center text-gray-700 hover:text-pink-500 transition-colors py-2"
+                        onClick={handleNavigation}
+                      >
+                        <History className="mr-2 h-4 w-4" />
+                        Receipt History
                       </a>
                     </div>
                   )}

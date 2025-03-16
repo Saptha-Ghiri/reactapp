@@ -155,6 +155,7 @@ function UserPost() {
   const [mapCenter, setMapCenter] = useState([13.07801, 80.268846]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [completedDonations, setCompletedDonations] = useState([]);
 
   const deletePost = async (postId, imageUrl) => {
     try {
@@ -249,6 +250,7 @@ function UserPost() {
         const userData = userSnap.data();
         if (!userData.posts || !userData.posts.length) {
           setPosts([]);
+          setCompletedDonations([]); // Also clear completed donations
           setLoading(false);
           return;
         }
@@ -257,14 +259,39 @@ function UserPost() {
           doc(db, "food items", postId)
         );
         const postSnapshots = await Promise.all(postRefs.map(getDoc));
-        const userPosts = postSnapshots
-          .filter((snap) => snap.exists())
-          .map((snap) => ({
-            ...snap.data(),
-            id: snap.id,
-          }));
 
-        setPosts(userPosts);
+        // Separate active and completed donations
+        const activePosts = [];
+        const completedPosts = [];
+
+        postSnapshots.forEach((snap) => {
+          if (snap.exists()) {
+            const post = {
+              ...snap.data(),
+              id: snap.id,
+            };
+
+            // Sort into active or completed based on status
+            if (post.status === "completed") {
+              completedPosts.push(post);
+            } else {
+              activePosts.push(post);
+            }
+          }
+        });
+
+        // Sort by most recent first
+        activePosts.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+        completedPosts.sort(
+          (a, b) =>
+            new Date(b.receivedAt || b.createdAt) -
+            new Date(a.receivedAt || a.createdAt)
+        );
+
+        setPosts(activePosts);
+        setCompletedDonations(completedPosts);
       }
     } catch (e) {
       console.error("Error fetching posts:", e);
@@ -273,7 +300,6 @@ function UserPost() {
       setLoading(false);
     }
   };
-
   const handleImageUpload = async (file) => {
     if (!file) return null;
     try {
@@ -693,13 +719,91 @@ function UserPost() {
                   </div>
                 ))
               ) : (
-                <p className="text-center text-gray-500 col-span-2">
-                  No food donations yet. Start sharing food with your community!
-                </p>
+                posts.length === 0 && completedDonations.length === 0 ? (
+                  <p className="text-center text-gray-500 col-span-2">
+                    No food donations yet. Start sharing food with your community!
+                  </p>
+                ) : posts.length === 0 ? (
+                  <p className="text-center text-gray-500 col-span-2">
+                    No active donations at the moment. Your completed donations are shown below.
+                  </p>
+                ) : null
+                
               )}
             </div>
           )}
         </div>
+
+        {completedDonations.length > 0 && (
+          <div className="mt-8">
+            <h2 className="text-xl font-bold text-center mb-4">
+              Completed Donations
+            </h2>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              {completedDonations.map((post) => (
+                <div
+                  key={post.id}
+                  className="p-4 border rounded-md shadow-md bg-gray-50 space-y-2 transition-transform hover:scale-[1.02]"
+                >
+                  {post.imageUrl && (
+                    <img
+                      src={post.imageUrl}
+                      alt={post.foodName}
+                      className="w-full h-40 object-cover rounded-md"
+                      onError={(e) => {
+                        e.target.src = "/placeholder-food-image.png";
+                        e.target.onerror = null;
+                      }}
+                    />
+                  )}
+                  <div className="flex justify-between items-start">
+                    <h3 className="text-lg font-semibold">{post.foodName}</h3>
+                    <span
+                      className={`px-2 py-1 rounded-full text-sm font-medium ${
+                        post.foodType === "Veg"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
+                    >
+                      {post.foodType}
+                    </span>
+                  </div>
+
+                  <div className="space-y-1 text-sm">
+                    <p className="text-gray-600">
+                      <span className="font-medium">Quantity:</span>{" "}
+                      {post.quantity}
+                    </p>
+                    <p className="text-gray-600">
+                      <span className="font-medium">Location:</span>{" "}
+                      {post.pickupLocation}
+                    </p>
+                    <p className="text-gray-600">
+                      <span className="font-medium">Received on:</span>{" "}
+                      {new Date(post.receivedAt).toLocaleString()}
+                    </p>
+                    <p className="text-gray-600">
+                      <span className="font-medium">Receiver:</span>{" "}
+                      {post.receiverContact || "Anonymous"}
+                    </p>
+                    {post.notes && (
+                      <p className="text-gray-500 italic border-l-2 border-gray-300 pl-2">
+                        {post.notes}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="pt-2 flex justify-center">
+                    <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                      Successfully Donated
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
