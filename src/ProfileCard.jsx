@@ -140,11 +140,19 @@ const ProfileCard = () => {
               </button>
 
               <button
-                onClick={() => navigate("/display")}
+                onClick={() => navigate("/userfoods")}
                 className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white py-2 px-6 rounded-lg flex items-center justify-center mx-auto transform hover:scale-[1.02] transition-all"
               >
                 <Utensils size={18} className="mr-2" />
-                Food Monitor
+                Food Contributions
+              </button>
+
+              <button
+                onClick={() => navigate("/userreceived")}
+                className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white py-2 px-6 rounded-lg flex items-center justify-center mx-auto transform hover:scale-[1.02] transition-all"
+              >
+                <Utensils size={18} className="mr-2" />
+                Food Received
               </button>
             </div>
           </div>
