@@ -712,7 +712,10 @@ const FoodStationInteraction = () => {
 
       // Navigate back to station detail
       setMessage("Thank you! Returning to station details...");
-      setTimeout(() => navigate(`/food-station/${stationId}`), 2000);
+      setTimeout(() => {
+        navigate(`/food-station-user`);
+        window.location.reload();
+      }, 2000);
     } catch (err) {
       console.error("Error updating station:", err);
       setMessage(`Error: ${err.message}`);
@@ -770,8 +773,64 @@ const FoodStationInteraction = () => {
     return () => clearInterval(interval);
   }, [step, sensorData, message]);
 
-  // Function to cancel the current operation
+  // Add this to your state variables at the top of your component
+  const [waitingForFoodRemoval, setWaitingForFoodRemoval] = useState(false);
+  const [removalCheckInterval, setRemovalCheckInterval] = useState(null);
+
+  // Modified handleCancelOperation function
   const handleCancelOperation = () => {
+    // If in confirmation step, check if food is present in the rack
+    if (
+      step === "confirmation" &&
+      sensorData?.ultrasonic < FOOD_PRESENT_THRESHOLD
+    ) {
+      // Food is detected but user wants to cancel - force removal
+      setMessage(
+        "Food detected in the rack. Please remove the food before cancelling."
+      );
+      setWaitingForFoodRemoval(true);
+
+      // Start an interval to check for food removal
+      const intervalId = setInterval(() => {
+        console.log("Checking for food removal...", sensorData?.ultrasonic);
+        if (sensorData?.ultrasonic > FOOD_ABSENT_THRESHOLD) {
+          // Food has been removed, clear the interval and proceed with cancellation
+          clearInterval(intervalId);
+          setWaitingForFoodRemoval(false);
+          setRemovalCheckInterval(null);
+
+          // Now proceed with the cancellation
+          completeCancellation();
+          setMessage("Food removed. Operation cancelled.");
+        }
+      }, 1000); // Check every second
+
+      // Store the interval ID so we can clear it if needed
+      setRemovalCheckInterval(intervalId);
+
+      // Return early - don't proceed with cancellation yet
+      return;
+    }
+
+    // If not in confirmation step or no food detected, proceed with normal cancellation
+    completeCancellation();
+  };
+
+  // Helper function to complete the cancellation process
+  const completeCancellation = () => {
+    // Clear any existing interval
+    if (removalCheckInterval) {
+      clearInterval(removalCheckInterval);
+      setRemovalCheckInterval(null);
+      setWaitingForFoodRemoval(false);
+    }
+
+    // Stop the camera if it's active
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+
     // Close the door
     closeDoor();
 
@@ -783,8 +842,24 @@ const FoodStationInteraction = () => {
     setFoodDetected(false);
     setRetryCount(0);
     setCheckingForFood(false);
+
+    // Clear food data
+    setFoodData({
+      name: "",
+      diet: "veg",
+      imageUrl: "",
+      date: new Date().toISOString().split("T")[0],
+    });
   };
 
+  // Add a cleanup effect to clear the interval if component unmounts
+  useEffect(() => {
+    return () => {
+      if (removalCheckInterval) {
+        clearInterval(removalCheckInterval);
+      }
+    };
+  }, [removalCheckInterval]);
   // Open food station door
   const openDoor = async () => {
     try {
@@ -854,7 +929,7 @@ const FoodStationInteraction = () => {
   // Render based on current step
   return (
     <div className="w-full max-w-4xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Food Station Interaction</h1>
+      <h1 className="text-7xl font-bold mb-4 text-center p-5">Food Station</h1>
 
       {message && (
         <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-4">
@@ -866,7 +941,7 @@ const FoodStationInteraction = () => {
         <div className="text-center">
           <button
             onClick={startScanner}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            className="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded-2xl text-6xl"
           >
             Scan QR Code
           </button>
@@ -900,6 +975,18 @@ const FoodStationInteraction = () => {
             >
               Take Food
             </button>
+            <button
+              onClick={() => {
+                // Navigate to the route
+                navigate(`/food-station-user`);
+
+                // Force a page reload
+                window.location.reload();
+              }}
+              className="bg-red-500 hover:bg-red-700 text-white font-bold py-3 px-6 rounded"
+            >
+              Cancel
+            </button>
           </div>
         </div>
       )}
@@ -909,24 +996,49 @@ const FoodStationInteraction = () => {
           <h2 className="text-xl font-semibold mb-4">Add Food Details</h2>
 
           <div className="mb-6">
+            {/* Video preview or captured photo */}
             <div className="relative">
-              {/* Video preview */}
-              <video
-                ref={videoRef}
-                autoPlay
-                className="w-full h-64 object-cover bg-gray-200 mb-2 rounded"
-              ></video>
+              {!foodData.imageUrl ? (
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  className="w-full h-96 object-cover bg-gray-200 mb-2 rounded"
+                ></video>
+              ) : (
+                <img
+                  src={foodData.imageUrl}
+                  alt="Food"
+                  className="w-full h-64 object-cover bg-gray-200 mb-2 rounded"
+                />
+              )}
 
               {/* Canvas for capturing photo */}
               <canvas ref={canvasRef} className="hidden"></canvas>
 
-              {/* Photo button */}
-              <button
-                onClick={takePhoto}
-                className="absolute bottom-4 right-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-              >
-                Take Photo
-              </button>
+              {/* Photo button - only show if no image captured yet */}
+              {!foodData.imageUrl && (
+                <button
+                  onClick={takePhoto}
+                  className="absolute bottom-4 right-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+                >
+                  Take Photo
+                </button>
+              )}
+
+              {/* Retake photo button - only show if image already captured */}
+              {foodData.imageUrl && (
+                <button
+                  onClick={() => {
+                    // Restart camera
+                    startCamera();
+                    // Clear the image URL
+                    setFoodData((prev) => ({ ...prev, imageUrl: "" }));
+                  }}
+                  className="absolute bottom-4 right-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+                >
+                  Retake Photo
+                </button>
+              )}
             </div>
 
             {/* Food details form */}
@@ -987,6 +1099,12 @@ const FoodStationInteraction = () => {
               >
                 Submit Food Details
               </button>
+              <button
+                onClick={handleCancelOperation}
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4"
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
@@ -1035,10 +1153,12 @@ const FoodStationInteraction = () => {
 
               <button
                 onClick={handleCancelOperation}
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                disabled={checkingForFood}
+                className={`bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ${
+                  waitingForFoodRemoval ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                disabled={checkingForFood || waitingForFoodRemoval}
               >
-                Cancel
+                {waitingForFoodRemoval ? "Remove Food First" : "Cancel"}
               </button>
             </div>
           </div>
@@ -1155,7 +1275,7 @@ const FoodStationInteraction = () => {
       )}
 
       {/* Sensor data display - Updated to show all available sensor data */}
-      {station && (
+      {/* {station && (
         <div className="mt-8 bg-white shadow-md rounded-lg p-6">
           <h2 className="text-xl font-semibold mb-4">Sensor Data</h2>
 
@@ -1189,17 +1309,151 @@ const FoodStationInteraction = () => {
             ))}
           </div>
         </div>
-      )}
+      )} */}
+
+      {/* Food Station Cabinet */}
+      <div className="mt-4 sm:mt-8 p-3 sm:p-6 border rounded-lg shadow-inner bg-gray-50">
+        <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-center">
+          Food Station Cabinet
+        </h2>
+        {station ? (
+          <div className="flex justify-center">
+            {/* Visual Rack with shelves */}
+            <div className="relative w-full max-w-xs sm:max-w-md md:max-w-lg">
+              {/* Cabinet Background */}
+              <div
+                className="sm:h-[500px] h-80 w-full bg-contain bg-no-repeat bg-center mx-auto"
+                style={{
+                  backgroundImage: "url('/food box.png')",
+                  maxWidth: "500px",
+                }}
+              ></div>
+
+              {/* Food Items Overlay */}
+              <div className="absolute inset-0 flex flex-col justify-between sm:mx-10 sm:my-5 mx-5 my-3 items-center p-2 sm:p-3">
+                {/* Rack 1 (Top) */}
+                <div className="h-1/2 w-full px-2 justify-between items-center m-2">
+                  {station.racks && station.racks[0]?.isFilled ? (
+                    <div className="w-full h-full text-center flex bg-black bg-opacity-40 rounded justify-between items-center border border-white">
+                      {/* Left side - Image */}
+                      <div className=" h-full flex justify-center items-center p-1">
+                        <img
+                          src={
+                            station.racks[0]?.imageUrl ||
+                            "/placeholder-food.png"
+                          }
+                          alt={station.racks[0]?.Diet || "Food"}
+                          className="max-h-full max-w-full object-contain rounded shadow-md"
+                          onError={(e) => {
+                            e.target.src = "/placeholder-food.png";
+                          }}
+                        />
+                      </div>
+
+                      {/* Right side - Details */}
+                      <div className="w-2/3 p-1 sm:p-2 text-white">
+                        <p className="font-bold text-xs sm:text-sm">
+                          {station.racks[0]?.name}
+                        </p>
+
+                        <p className="text-xs sm:text-sm">
+                          Date: {station.racks[0]?.date}
+                        </p>
+                        <p className="text-xs sm:text-sm">
+                          Food Type: {station.racks[0]?.Diet}
+                        </p>
+                        {station.racks[0]?.items?.length > 0 && (
+                          <p className="text-xs mt-1 truncate">
+                            {station.racks[0]?.items.join(", ")}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-black bg-opacity-40 text-white rounded">
+                      <div className="text-center">
+                        <p className="font-bold text-xs sm:text-sm">
+                          {(station.racks && station.racks[0]?.name) ||
+                            "Unknown Rack"}
+                        </p>
+                        <p className="text-red-300 font-semibold text-xs sm:text-sm">
+                          Empty
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Rack 2 (Middle) */}
+                <div className="h-1/2 w-full px-2">
+                  {station.racks && station.racks[1]?.isFilled ? (
+                    <div className="w-full h-full flex items-center justify-center bg-black bg-opacity-40 rounded">
+                      {/* Left side - Image */}
+                      <div className="w-1/3 h-full flex justify-center items-center p-1">
+                        <img
+                          src={
+                            station.racks[1]?.imageUrl ||
+                            "/placeholder-food.png"
+                          }
+                          alt={station.racks[1]?.Diet || "Food"}
+                          className="max-h-full max-w-full object-contain rounded shadow-md"
+                          onError={(e) => {
+                            e.target.src = "/placeholder-food.png";
+                          }}
+                        />
+                      </div>
+
+                      {/* Right side - Details */}
+                      <div className="w-2/3 p-1 sm:p-2 text-white">
+                        <p className="font-bold text-xs sm:text-sm">
+                          {station.racks[1]?.name}
+                        </p>
+                        <p className="text-green-300 font-semibold text-xs sm:text-sm">
+                          Filled
+                        </p>
+                        <p className="text-xs sm:text-sm">
+                          Food Type: {station.racks[1]?.Diet}
+                        </p>
+                        {station.racks[1]?.items?.length > 0 && (
+                          <p className="text-xs mt-1 truncate">
+                            {station.racks[1]?.items.join(", ")}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-black bg-opacity-40 text-white rounded">
+                      <div className="text-center">
+                        <p className="font-bold text-xs sm:text-sm">
+                          {(station.racks && station.racks[1]?.name) ||
+                            "Unknown Rack"}
+                        </p>
+                        <p className="text-red-300 font-semibold text-xs sm:text-sm">
+                          Empty
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="text-center p-4">
+            <p>Loading station data...</p>
+          </div>
+        )}
+      </div>
 
       {/* Footer with navigation */}
-      <div className="mt-8 flex justify-center">
+      {/* <div className="mt-8 flex justify-center">
         <button
           onClick={() => navigate(`/food-station/${stationId}`)}
           className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
         >
           Back to Station Details
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };
