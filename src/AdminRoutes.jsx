@@ -195,7 +195,7 @@ const AdminRoutes = () => {
               path="/food-station-analysis"
               element={<FoodFlowAnalysis />}
             />
-            
+
             {/* Redirect if no match */}
             <Route path="*" element={<Navigate to="/admin" replace />} />
           </Routes>
