@@ -87,7 +87,6 @@ const AppLayout = () => {
         />
 
         <Route path="/login" element={<Login />} />
-        <Route path="/key" element={<FormWithKeyboard />} />
 
         
         <Route path="/food-station-analysis" element={<FoodFlowAnalysis />} />
