@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../firebase/config";
 
 const FoodMap = () => {
@@ -36,11 +36,14 @@ const FoodMap = () => {
     });
   };
 
-  // Fetch all food donations
+  // Fetch available food donations
   useEffect(() => {
     const fetchDonations = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "food items"));
+        // Create a query for available food items only
+        const q = query(collection(db, "food items"), where("status", "==", "available"));
+        const querySnapshot = await getDocs(q);
+        
         const donationData = querySnapshot.docs
           .map((doc) => ({
             id: doc.id,
@@ -56,7 +59,7 @@ const FoodMap = () => {
         }
       } catch (err) {
         console.error("Error fetching donations:", err);
-        setError("Failed to load donations");
+        setError("Failed to load available donations");
       } finally {
         setLoading(false);
       }
@@ -68,7 +71,7 @@ const FoodMap = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="text-xl text-gray-500">Loading donations map...</div>
+        <div className="text-xl text-gray-500">Loading available donations map...</div>
       </div>
     );
   }

@@ -26,26 +26,26 @@ const SouthIndianKitchen = () => {
           amount: 120,
           unit: "ml",
           icon: "🥞",
-          tip: "Ferment for 8 hours"
+          tip: "Ferment for 8 hours",
         },
         potato_masala: {
           amount: 80,
           unit: "g",
           icon: "🥔",
-          tip: "Mash while hot"
+          tip: "Mash while hot",
         },
         onions: {
           amount: 30,
           unit: "g",
           icon: "🧅",
-          tip: "Finely chop"
+          tip: "Finely chop",
         },
         coconut_chutney: {
           amount: 40,
           unit: "ml",
           icon: "🥥",
-          tip: "Grind with green chilies"
-        }
+          tip: "Grind with green chilies",
+        },
       },
       cookingTime: 15,
       description: "Crispy fermented crepe with spiced potato filling",
@@ -54,37 +54,37 @@ const SouthIndianKitchen = () => {
         "Spread batter in circular motion",
         "Add oil around edges",
         "Place potato masala in center",
-        "Fold and serve hot with chutneys"
+        "Fold and serve hot with chutneys",
       ],
       spiceLevel: "🌶️🌶️",
-      difficulty: "Beginner"
+      difficulty: "Beginner",
     },
-    "Rasam": {
+    Rasam: {
       servingsPerPerson: {
         toor_dal: {
           amount: 30,
           unit: "g",
           icon: "🟡",
-          tip: "Cook until soft"
+          tip: "Cook until soft",
         },
         tomatoes: {
           amount: 50,
           unit: "g",
           icon: "🍅",
-          tip: "Ripe tomatoes"
+          tip: "Ripe tomatoes",
         },
         rasam_powder: {
           amount: 10,
           unit: "g",
           icon: "🌶️",
-          tip: "Homemade preferred"
+          tip: "Homemade preferred",
         },
         tamarind: {
           amount: 5,
           unit: "g",
           icon: "🟤",
-          tip: "Soak in warm water"
-        }
+          tip: "Soak in warm water",
+        },
       },
       cookingTime: 20,
       description: "Tangy and spicy soup",
@@ -93,10 +93,10 @@ const SouthIndianKitchen = () => {
         "Cook tomatoes till soft",
         "Add rasam powder",
         "Simmer with spices",
-        "Temper with curry leaves"
+        "Temper with curry leaves",
       ],
       spiceLevel: "🌶️",
-      difficulty: "Beginner"
+      difficulty: "Beginner",
     },
     "Chettinad Chicken": {
       servingsPerPerson: {
@@ -104,26 +104,26 @@ const SouthIndianKitchen = () => {
           amount: 200,
           unit: "g",
           icon: "🍗",
-          tip: "Cut into medium pieces"
+          tip: "Cut into medium pieces",
         },
         onions: {
           amount: 100,
           unit: "g",
           icon: "🧅",
-          tip: "Finely sliced"
+          tip: "Finely sliced",
         },
         tomatoes: {
           amount: 100,
           unit: "g",
           icon: "🍅",
-          tip: "Chopped"
+          tip: "Chopped",
         },
         chettinad_masala: {
           amount: 15,
           unit: "g",
           icon: "🌶️",
-          tip: "Roast and grind spices"
-        }
+          tip: "Roast and grind spices",
+        },
       },
       cookingTime: 40,
       description: "Spicy chicken curry with aromatic spices",
@@ -132,11 +132,11 @@ const SouthIndianKitchen = () => {
         "Saute onions until golden",
         "Add tomatoes and cook till soft",
         "Add marinated chicken",
-        "Simmer until cooked"
+        "Simmer until cooked",
       ],
       spiceLevel: "🌶️🌶️🌶️",
-      difficulty: "Intermediate"
-    }
+      difficulty: "Intermediate",
+    },
   };
 
   const difficultySettings = {
@@ -145,41 +145,45 @@ const SouthIndianKitchen = () => {
       maxGuests: 2,
       roundCount: 3,
       allowedMistakes: 3,
-      tips: true
+      tips: true,
     },
     intermediate: {
       timeMultiplier: 1,
       maxGuests: 4,
       roundCount: 4,
       allowedMistakes: 2,
-      tips: true
+      tips: true,
     },
     expert: {
       timeMultiplier: 0.8,
       maxGuests: 6,
       roundCount: 5,
       allowedMistakes: 1,
-      tips: false
-    }
+      tips: false,
+    },
   };
 
   const tutorialSteps = [
     {
       title: "Welcome to South Indian Kitchen! 👋",
-      content: "Learn to cook authentic South Indian dishes while managing portions and avoiding waste."
+      content:
+        "Learn to cook authentic South Indian dishes while managing portions and avoiding waste.",
     },
     {
       title: "Choose Your Mode 🎮",
-      content: "Home Kitchen: Cook for 4 people\nRestaurant: Handle varying orders of 1-3 people"
+      content:
+        "Home Kitchen: Cook for 4 people\nRestaurant: Handle varying orders of 1-3 people",
     },
     {
       title: "Cooking Basics 🧑‍🍳",
-      content: "1. Drag ingredients to the cooking bowl\n2. Follow recipe proportions carefully\n3. Start cooking when ready"
+      content:
+        "1. Drag ingredients to the cooking bowl\n2. Follow recipe proportions carefully\n3. Start cooking when ready",
     },
     {
       title: "Scoring System ⭐",
-      content: "Get points for:\n- Correct portions\n- Minimal waste\n- Following cooking times"
-    }
+      content:
+        "Get points for:\n- Correct portions\n- Minimal waste\n- Following cooking times",
+    },
   ];
 
   useEffect(() => {
@@ -220,15 +224,19 @@ const SouthIndianKitchen = () => {
     const [recipeName] = availableRecipes[randomIndex];
 
     // Generate random number of guests based on game mode and difficulty
-    const maxGuests = gameMode === "home" ? 4 : difficultySettings[difficultyLevel].maxGuests;
-    const guests = gameMode === "home" ? 4 : Math.max(1, Math.floor(Math.random() * maxGuests) + 1);
+    const maxGuests =
+      gameMode === "home" ? 4 : difficultySettings[difficultyLevel].maxGuests;
+    const guests =
+      gameMode === "home"
+        ? 4
+        : Math.max(1, Math.floor(Math.random() * maxGuests) + 1);
 
     return {
       recipe: recipeName,
-      guests: guests
+      guests: guests,
     };
   };
-  
+
   const startGame = (mode) => {
     setGameMode(mode);
     setGameStarted(true);
@@ -261,14 +269,15 @@ const SouthIndianKitchen = () => {
       setBowlContents((prev) => [...prev, draggedIngredient]);
       setSelectedIngredients((prev) => ({
         ...prev,
-        [draggedIngredient.name]: (prev[draggedIngredient.name] || 0) + draggedIngredient.amount
+        [draggedIngredient.name]:
+          (prev[draggedIngredient.name] || 0) + draggedIngredient.amount,
       }));
     }
   };
 
   const startCooking = () => {
     if (cookingStage !== "prep") return;
-    
+
     setCookingStage("cooking");
     const recipe = recipes[currentOrder.recipe];
     const adjustedTime = Math.floor(recipe.cookingTime * timeMultiplier);
@@ -284,25 +293,37 @@ const SouthIndianKitchen = () => {
     let correct = true;
     let wastage = 0;
 
-    Object.entries(recipe.servingsPerPerson).forEach(([ingredient, details]) => {
-      const requiredAmount = details.amount * requiredGuests;
-      const selectedAmount = selectedIngredients[ingredient] || 0;
-      wastage += Math.max(0, selectedAmount - requiredAmount);
-      
-      if (Math.abs(selectedAmount - requiredAmount) > (requiredAmount * 0.1)) {
-        correct = false;
+    Object.entries(recipe.servingsPerPerson).forEach(
+      ([ingredient, details]) => {
+        const requiredAmount = details.amount * requiredGuests;
+        const selectedAmount = selectedIngredients[ingredient] || 0;
+        wastage += Math.max(0, selectedAmount - requiredAmount);
+
+        if (Math.abs(selectedAmount - requiredAmount) > requiredAmount * 0.1) {
+          correct = false;
+        }
       }
-    });
+    );
 
     setCookingStage("serving");
-    
+
     if (correct) {
       setScore((prev) => prev + 1);
-      setMessage(`Perfect! Your ${currentOrder.recipe} is ready! ${wastage > 0 ? `Waste: ${wastage}${wastage > 100 ? "g" : "ml"}` : "No waste!"} 🎉`);
+      setMessage(
+        `Perfect! Your ${currentOrder.recipe} is ready! ${
+          wastage > 0
+            ? `Waste: ${wastage}${wastage > 100 ? "g" : "ml"}`
+            : "No waste!"
+        } 🎉`
+      );
     } else {
       setMistakes((prev) => prev + 1);
-      setMessage(`Not quite right. Food wasted: ${wastage}${wastage > 100 ? "g" : "ml"}. Keep practicing! 📝`);
-      
+      setMessage(
+        `Not quite right. Food wasted: ${wastage}${
+          wastage > 100 ? "g" : "ml"
+        }. Keep practicing! 📝`
+      );
+
       if (mistakes + 1 >= difficultySettings[difficultyLevel].allowedMistakes) {
         endGame();
         return;
@@ -323,7 +344,9 @@ const SouthIndianKitchen = () => {
 
   const endGame = () => {
     setGameStarted(false);
-    setMessage(`Game Over! Final Score: ${score}/${difficultySettings[difficultyLevel].roundCount} 🏆`);
+    setMessage(
+      `Game Over! Final Score: ${score}/${difficultySettings[difficultyLevel].roundCount} 🏆`
+    );
   };
 
   return (
@@ -345,7 +368,9 @@ const SouthIndianKitchen = () => {
                 </p>
                 <div className="mt-4 flex justify-between">
                   <button
-                    onClick={() => setTutorialStep(Math.max(0, tutorialStep - 1))}
+                    onClick={() =>
+                      setTutorialStep(Math.max(0, tutorialStep - 1))
+                    }
                     className="bg-gray-200 px-4 py-2 rounded"
                     disabled={tutorialStep === 0}
                   >
@@ -378,7 +403,9 @@ const SouthIndianKitchen = () => {
                 </button>
 
                 <div className="mb-4">
-                  <h3 className="text-lg font-semibold mb-2">Select Difficulty:</h3>
+                  <h3 className="text-lg font-semibold mb-2">
+                    Select Difficulty:
+                  </h3>
                   <div className="flex gap-4 justify-center">
                     <button
                       onClick={() => setDifficultyLevel("beginner")}
@@ -423,120 +450,156 @@ const SouthIndianKitchen = () => {
                     <small>Cook for family of 4</small>
                   </button>
                   <button
-                   onClick={() => startGame("restaurant")}
-                   className="bg-green-100 hover:bg-green-200 p-4 rounded-lg"
-                 >
-                   🏪 Restaurant
-                   <br />
-                   <small>Handle varying orders</small>
-                 </button>
-               </div>
-             </div>
-           )}
-         </div>
-       ) : (
-         <div className="game-area space-y-4">
-           <div className="flex justify-between bg-gray-100 p-2 rounded">
-             <span>Round: {currentRound}/{difficultySettings[difficultyLevel].roundCount} 🎮</span>
-             <span>Score: {score} ⭐</span>
-             <span>Mistakes: {mistakes}/{difficultySettings[difficultyLevel].allowedMistakes} ❌</span>
-             {timer > 0 && <span>Time: {timer}s ⏲️</span>}
-           </div>
+                    onClick={() => startGame("restaurant")}
+                    className="bg-green-100 hover:bg-green-200 p-4 rounded-lg"
+                  >
+                    🏪 Restaurant
+                    <br />
+                    <small>Handle varying orders</small>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="game-area space-y-4">
+            <div className="flex justify-between bg-gray-100 p-2 rounded">
+              <span>
+                Round: {currentRound}/
+                {difficultySettings[difficultyLevel].roundCount} 🎮
+              </span>
+              <span>Score: {score} ⭐</span>
+              <span>
+                Mistakes: {mistakes}/
+                {difficultySettings[difficultyLevel].allowedMistakes} ❌
+              </span>
+              {timer > 0 && <span>Time: {timer}s ⏲️</span>}
+            </div>
 
-           {currentOrder && (
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-               <div className="recipe-info bg-yellow-50 p-4 rounded">
-                 <h3 className="font-bold">📋 Current Order</h3>
-                 <p>{currentOrder.recipe}</p>
-                 <p>For {currentOrder.guests} people</p>
-                 <p>Spice Level: {recipes[currentOrder.recipe].spiceLevel}</p>
-                 <div className="mt-2">
-                   <h4 className="font-bold">Steps:</h4>
-                   {recipes[currentOrder.recipe].cookingSteps.map((step, i) => (
-                     <p key={i} className="text-sm">➡️ {step}</p>
-                   ))}
-                 </div>
-                 {difficultySettings[difficultyLevel].tips && (
-                   <div className="mt-2 text-sm bg-blue-50 p-2 rounded">
-                     <p className="font-bold">💡 Tips:</p>
-                     {Object.entries(recipes[currentOrder.recipe].servingsPerPerson).map(
-                       ([name, details]) => (
-                         <p key={name}>• {details.tip}</p>
-                       )
-                     )}
-                   </div>
-                 )}
-               </div>
+            {currentOrder && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="recipe-info bg-yellow-50 p-4 rounded">
+                  <h3 className="font-bold">📋 Current Order</h3>
+                  <p>{currentOrder.recipe}</p>
+                  <p>For {currentOrder.guests} people</p>
+                  <p>Spice Level: {recipes[currentOrder.recipe].spiceLevel}</p>
+                  <div className="mt-2">
+                    <h4 className="font-bold">Steps:</h4>
+                    {recipes[currentOrder.recipe].cookingSteps.map(
+                      (step, i) => (
+                        <p key={i} className="text-sm">
+                          ➡️ {step}
+                        </p>
+                      )
+                    )}
+                  </div>
+                  {difficultySettings[difficultyLevel].tips && (
+                    <div className="mt-2 text-sm bg-blue-50 p-2 rounded">
+                      <p className="font-bold">💡 Tips:</p>
+                      {Object.entries(
+                        recipes[currentOrder.recipe].servingsPerPerson
+                      ).map(([name, details]) => (
+                        <p key={name}>• {details.tip}</p>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
-               <div
-                 className="cooking-area bg-orange-50 p-4 rounded"
-                 onDragOver={(e) => e.preventDefault()}
-                 onDrop={handleDrop}
-               >
-                 <h3 className="font-bold">🍳 Cooking Area</h3>
-                 <div className="grid grid-cols-3 gap-2 mt-2">
-                   {Object.entries(recipes[currentOrder.recipe].servingsPerPerson).map(
-                     ([name, details]) => (
-                       <div
-                         key={name}
-                         draggable={cookingStage === "prep"}
-                         onDragStart={(e) => handleDragStart(e, name, details.amount)}
-                         className="bg-white p-2 rounded text-center cursor-move"
-                       >
-                         <span className="text-2xl">{details.icon}</span>
-                         <p className="text-sm">{name.replace("_", " ")}</p>
-                         <small>
-                           {details.amount}
-                           {details.unit}/person
-                         </small>
-                       </div>
-                     )
-                   )}
-                 </div>
-               </div>
-             </div>
-           )}
+                <div
+                  className="cooking-area bg-orange-50 p-4 rounded text-center"
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={handleDrop}
+                >
+                  <h6>Drop here</h6>
+                  <h3 className="font-bold gap-2 text-7xl text-center items-center justify-center flex" >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="250"
+                      height="250"
+                      viewBox="0 0 24 24"
+                      className="text-gray-800"
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M13 18.268a2 2 0 1 1-2 0v-2.339A7.002 7.002 0 0 1 12 2a7 7 0 0 1 1 13.93zM12 14a5 5 0 1 0 0-10a5 5 0 0 0 0 10"
+                      />
+                    </svg>
+                    
+                  </h3>
+                  
+                  <div className="grid grid-cols-3 gap-2 mt-2">
+                    {Object.entries(
+                      recipes[currentOrder.recipe].servingsPerPerson
+                    ).map(([name, details]) => (
+                      <div
+                        key={name}
+                        draggable={cookingStage === "prep"}
+                        onDragStart={(e) =>
+                          handleDragStart(e, name, details.amount)
+                        }
+                        className="bg-white p-2 rounded text-center cursor-move"
+                      >
+                        <span className="text-2xl">{details.icon}</span>
+                        <p className="text-sm">{name.replace("_", " ")}</p>
+                        <small>
+                          {details.amount}
+                          {details.unit}/person
+                        </small>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
 
-           <div className="preparation-bowl bg-white p-4 rounded border-2 border-dashed">
-             <h3 className="font-bold">🥘 Preparation Bowl</h3>
-             <div className="grid grid-cols-4 gap-2 mt-2">
-               {bowlContents.map((item, i) => (
-                 <div key={i} className="bg-gray-100 p-2 rounded text-center">
-                   <span>
-                     {recipes[currentOrder.recipe].servingsPerPerson[item.name].icon}
-                   </span>
-                   <small>
-                     {item.amount}
-                     {recipes[currentOrder.recipe].servingsPerPerson[item.name].unit}
-                   </small>
-                 </div>
-               ))}
-             </div>
-           </div>
+            <div className="preparation-bowl bg-white p-4 rounded border-2 border-dashed">
+              <h3 className="font-bold">🥘 Preparation Bowl</h3>
+              <div className="grid grid-cols-4 gap-2 mt-2">
+                {bowlContents.map((item, i) => (
+                  <div key={i} className="bg-gray-100 p-2 rounded text-center">
+                    <span>
+                      {
+                        recipes[currentOrder.recipe].servingsPerPerson[
+                          item.name
+                        ].icon
+                      }
+                    </span>
+                    <small>
+                      {item.amount}
+                      {
+                        recipes[currentOrder.recipe].servingsPerPerson[
+                          item.name
+                        ].unit
+                      }
+                    </small>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-           {cookingStage === "prep" && bowlContents.length > 0 && (
-             <button
-               onClick={startCooking}
-               className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600"
-             >
-               🔥 Start Cooking!
-             </button>
-           )}
+            {cookingStage === "prep" && bowlContents.length > 0 && (
+              <button
+                onClick={startCooking}
+                className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600"
+              >
+                🔥 Start Cooking!
+              </button>
+            )}
 
-           {message && (
-             <div
-               className={`p-4 rounded text-center ${
-                 message.includes("Perfect") ? "bg-green-100" : "bg-yellow-100"
-               }`}
-             >
-               {message}
-             </div>
-           )}
-         </div>
-       )}
-     </div>
-   </div>
- );
+            {message && (
+              <div
+                className={`p-4 rounded text-center ${
+                  message.includes("Perfect") ? "bg-green-100" : "bg-yellow-100"
+                }`}
+              >
+                {message}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default SouthIndianKitchen;

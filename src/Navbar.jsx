@@ -237,12 +237,12 @@ const Navbar = () => {
                       >
                         Restaurant
                       </a>
-                      <a
+                      {/* <a
                         href="/rewards"
                         className="block px-4 py-2 text-gray-700 hover:bg-pink-50"
                       >
                         Rewards
-                      </a>
+                      </a> */}
                     </div>
                   )}
                 </div>
@@ -469,13 +469,13 @@ const Navbar = () => {
                       >
                         Restaurant
                       </a>
-                      <a
+                      {/* <a
                         href="/rewards"
                         className="block text-gray-700 hover:text-pink-500 transition-colors py-2"
                         onClick={handleNavigation}
                       >
                         Rewards
-                      </a>
+                      </a> */}
                     </div>
                   )}
                 </div>
@@ -487,10 +487,10 @@ const Navbar = () => {
                   onClick={handleNavigation}
                 >
                   <div className="flex items-center">
-                    <MessageCircle className="mr-2" />
+                    <ChatNotification className="mr-2" />
                     <span>Messages</span>
                   </div>
-                  <ChatNotification />
+                  
                 </a>
 
                 {/* Profile Button */}
