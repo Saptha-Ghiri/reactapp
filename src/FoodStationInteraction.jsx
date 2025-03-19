@@ -12,6 +12,7 @@ import {
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { getDatabase, ref as rtdbRef, set, onValue } from "firebase/database";
 import { db, storage } from "../firebase/config";
+import VirtualKeyboard from "./VirtualKeyboard";
 
 const FoodStationInteraction = () => {
   // State variables
@@ -926,6 +927,28 @@ const FoodStationInteraction = () => {
     checkFoodPresence();
   };
 
+    
+    const [showKeyboard, setShowKeyboard] = useState(false);
+    const [activeField, setActiveField] = useState('');
+    
+    const handleInputFocus = (fieldName) => {
+      setShowKeyboard(true);
+      setActiveField(fieldName);
+    };
+    
+    const handleKeyboardInput = (input) => {
+      setFoodData(prev => ({
+        ...prev,
+        [activeField]: input
+      }));
+    };
+    
+    const handleKeyboardEnter = () => {
+      setShowKeyboard(false);
+    };
+    
+   
+
   // Render based on current step
   return (
     <div className="w-full max-w-4xl mx-auto p-4">
@@ -991,7 +1014,7 @@ const FoodStationInteraction = () => {
         </div>
       )}
 
-      {step === "put-food" && (
+{step === "put-food" && (
         <div className="bg-white shadow-md rounded-lg p-6">
           <h2 className="text-xl font-semibold mb-4">Add Food Details</h2>
 
@@ -1052,6 +1075,7 @@ const FoodStationInteraction = () => {
                 onChange={(e) =>
                   setFoodData((prev) => ({ ...prev, name: e.target.value }))
                 }
+                onFocus={() => handleInputFocus('name')}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 placeholder="Enter food name"
               />
@@ -1101,7 +1125,7 @@ const FoodStationInteraction = () => {
               </button>
               <button
                 onClick={handleCancelOperation}
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4"
+                className="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4"
               >
                 Cancel
               </button>
@@ -1109,6 +1133,17 @@ const FoodStationInteraction = () => {
           </div>
         </div>
       )}
+      
+      {/* Virtual Keyboard */}
+      {showKeyboard && (
+        <VirtualKeyboard
+          onInput={handleKeyboardInput}
+          initialValue={foodData[activeField]}
+          onEnter={handleKeyboardEnter}
+          onClose={() => setShowKeyboard(false)}
+        />
+      )}
+=  
 
       {step === "confirmation" && (
         <div className="bg-white shadow-md rounded-lg p-6 text-center">

@@ -33,13 +33,13 @@ import ChatPage from "./ChatPage";
 import ReceiverNotifications from "./ReceiverNotifications";
 import DonorHistory from "./DonorHistory";
 import ReceiverHistory from "./ReceiverHistory";
-
 // Import Admin Components
 import AdminDashboard from "./AdminDashboard";
 import UserAnalytics from "./UserAnalytics";
 import AdminDonations from "./AdminDonations";
 import AdminRoutes from "./AdminRoutes";
 import FoodFlowAnalysis from "./Analysis";
+import FormWithKeyboard from "./FormWithKeyboard";
 
 // Protected Route Component
 const ProtectedRoute = ({ element }) => {
@@ -88,6 +88,9 @@ const AppLayout = () => {
         />
 
         <Route path="/login" element={<Login />} />
+        <Route path="/key" element={<FormWithKeyboard />} />
+
+        
         <Route path="/food-station-analysis" element={<FoodFlowAnalysis />} />
         <Route path="/food-flow-analysis" element={<AdminDashboard />} />
         <Route path="/map" element={<FoodMap />} />

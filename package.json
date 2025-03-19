@@ -23,6 +23,7 @@
     "react-dom": "^18.3.1",
     "react-leaflet": "^4.2.1",
     "react-router-dom": "^7.1.5",
+    "react-simple-keyboard": "^3.8.55",
     "recharts": "^2.15.1"
   },
   "devDependencies": {
