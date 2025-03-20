@@ -27,16 +27,21 @@ const AdminDonations = () => {
   const [lastDoc, setLastDoc] = useState(null);
   const [hasMore, setHasMore] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
   const PAGE_SIZE = 15;
 
   useEffect(() => {
+    // Reset and load donations when filters change
+    setLastDoc(null);
+    setHasMore(true);
     loadDonations();
   }, [filterStatus, filterFoodType]);
 
   const loadDonations = async (searchStart = null) => {
     try {
       setLoading(true);
+      setError(null);
 
       // Build query
       let donationsQuery = collection(db, "food items");
@@ -49,6 +54,13 @@ const AdminDonations = () => {
 
       if (filterFoodType !== "all") {
         constraints.push(where("foodType", "==", filterFoodType));
+      }
+
+      // If there's a search query, handle it differently
+      if (isSearching && searchQuery.trim()) {
+        // For search, we need to use a different approach
+        constraints.push(where("foodName", ">=", searchQuery));
+        constraints.push(where("foodName", "<=", searchQuery + "\uf8ff"));
       }
 
       // Add sorting and pagination
@@ -89,7 +101,7 @@ const AdminDonations = () => {
       }
     } catch (err) {
       console.error("Error loading donations:", err);
-      setError("Failed to load donations");
+      setError("Failed to load donations: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -101,55 +113,24 @@ const AdminDonations = () => {
     }
   };
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) {
-      // If search is empty, just load with filters
-      loadDonations();
-      return;
-    }
+  const handleSearch = () => {
+    // Reset pagination
+    setLastDoc(null);
+    setHasMore(true);
 
-    try {
-      setLoading(true);
+    // Set search flag
+    setIsSearching(!!searchQuery.trim());
 
-      // Search by food name (case insensitive if possible with your Firestore setup)
-      const nameQuerySnapshot = await getDocs(
-        query(
-          collection(db, "food items"),
-          where("foodName", ">=", searchQuery),
-          where("foodName", "<=", searchQuery + "\uf8ff"),
-          limit(PAGE_SIZE)
-        )
-      );
+    // Load donations with the current search and filters
+    loadDonations();
+  };
 
-      // Process results
-      const donationsList = [];
-      nameQuerySnapshot.forEach((doc) => {
-        // Apply client-side filtering for other filters
-        const data = doc.data();
-        if (
-          (filterStatus === "all" || data.status === filterStatus) &&
-          (filterFoodType === "all" || data.foodType === filterFoodType)
-        ) {
-          donationsList.push({
-            id: doc.id,
-            ...data,
-          });
-        }
-      });
-
-      // Sort by date manually since we're doing client-side filtering
-      donationsList.sort((a, b) => {
-        return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
-      });
-
-      setDonations(donationsList);
-      setHasMore(false); // Disable load more for search results
-    } catch (err) {
-      console.error("Error searching donations:", err);
-      setError("Search failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+  const clearSearch = () => {
+    setSearchQuery("");
+    setIsSearching(false);
+    setLastDoc(null);
+    setHasMore(true);
+    loadDonations();
   };
 
   const viewDonationDetails = async (donationId) => {
@@ -275,13 +256,23 @@ const AdminDonations = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Search
               </label>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by food name..."
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
-              />
+              <div className="flex">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search by food name..."
+                  className="block w-full rounded-l-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
+                />
+                {isSearching && (
+                  <button
+                    onClick={clearSearch}
+                    className="bg-gray-200 px-2 rounded-r-md border-t border-r border-b border-gray-300"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -321,6 +312,25 @@ const AdminDonations = () => {
                 Search
               </button>
             </div>
+          </div>
+
+          {/* Active Filters Display */}
+          <div className="mt-2 flex flex-wrap gap-2">
+            {isSearching && (
+              <span className="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full">
+                Search: "{searchQuery}"
+              </span>
+            )}
+            {filterStatus !== "all" && (
+              <span className="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full">
+                Status: {filterStatus}
+              </span>
+            )}
+            {filterFoodType !== "all" && (
+              <span className="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full">
+                Type: {filterFoodType}
+              </span>
+            )}
           </div>
         </div>
 
