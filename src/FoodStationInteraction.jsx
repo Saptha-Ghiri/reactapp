@@ -950,13 +950,11 @@ const FoodStationInteraction = () => {
   return (
     <div className="w-full max-w-4xl mx-auto p-4">
       <h1 className="text-7xl font-bold mb-4 text-center p-5">Food Station</h1>
-
       {message && (
         <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-4">
           {message}
         </div>
       )}
-
       {step === "initial" && (
         <div className="text-center">
           <button
@@ -967,14 +965,12 @@ const FoodStationInteraction = () => {
           </button>
         </div>
       )}
-
       {step === "scanning" && (
         <div className="mx-auto max-w-md">
           <h2 className="text-xl font-semibold mb-2">Scan Your QR Code</h2>
           <div id="reader" className="w-full"></div>
         </div>
       )}
-
       {step === "action-selection" && user && (
         <div className="bg-white shadow-md rounded-lg p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">
@@ -1010,60 +1006,61 @@ const FoodStationInteraction = () => {
           </div>
         </div>
       )}
-
       {step === "put-food" && (
-        <div className="bg-white shadow-md rounded-lg p-6 overflow-y-auto custom-scrollbar h-screen flex flex-col relative">
+        <div className="bg-white shadow-md rounded-lg p-6">
           <h2 className="text-xl font-semibold mb-4">Add Food Details</h2>
 
-          <div className="mb-6 pb-20">
-            {" "}
-            {/* Added padding at bottom to make room for keyboard */}
-            {/* Video preview or captured photo */}
-            <div className="relative">
-              {!foodData.imageUrl ? (
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  className="w-full h-64 object-cover bg-gray-200 mb-2 rounded" // Reduced height from h-96 to h-64
-                ></video>
-              ) : (
-                <img
-                  src={foodData.imageUrl}
-                  alt="Food"
-                  className="w-full h-48 object-cover bg-gray-200 mb-2 rounded" // Reduced height from h-64 to h-48
-                />
-              )}
+          <div className="mb-6 flex">
+            <div className="flex flex-col h-full">
+              {/* Video preview or captured photo */}
+              <div className="relative flex h-full">
+                {!foodData.imageUrl ? (
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    className="w-full h-52 object-cover bg-gray-200 mb-2 rounded"
+                  ></video>
+                ) : (
+                  <img
+                    src={foodData.imageUrl}
+                    alt="Food"
+                    className="w-full h-96 object-cover bg-gray-200 mb-2 rounded"
+                  />
+                )}
 
-              {/* Canvas for capturing photo */}
-              <canvas ref={canvasRef} className="hidden"></canvas>
+                {/* Canvas for capturing photo */}
+                <canvas ref={canvasRef} className="hidden"></canvas>
 
-              {/* Photo button - only show if no image captured yet */}
-              {!foodData.imageUrl && (
-                <button
-                  onClick={takePhoto}
-                  className="absolute bottom-4 right-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-                >
-                  Take Photo
-                </button>
-              )}
+                {/* Photo button - only show if no image captured yet */}
+                {!foodData.imageUrl && (
+                  <button
+                    onClick={takePhoto}
+                    className="absolute bottom-4 right-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+                  >
+                    Take Photo
+                  </button>
+                )}
 
-              {/* Retake photo button - only show if image already captured */}
-              {foodData.imageUrl && (
-                <button
-                  onClick={() => {
-                    // Restart camera
-                    startCamera();
-                    // Clear the image URL
-                    setFoodData((prev) => ({ ...prev, imageUrl: "" }));
-                  }}
-                  className="absolute bottom-4 right-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-                >
-                  Retake Photo
-                </button>
-              )}
+                {/* Retake photo button - only show if image already captured */}
+                {foodData.imageUrl && (
+                  <button
+                    onClick={() => {
+                      // Restart camera
+                      startCamera();
+                      // Clear the image URL
+                      setFoodData((prev) => ({ ...prev, imageUrl: "" }));
+                    }}
+                    className="absolute bottom-4 right-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+                  >
+                    Retake Photo
+                  </button>
+                )}
+              </div>
             </div>
+
+<div className="flex flex-col p-10">
             {/* Food details form */}
-            <div className="mb-4">
+            <div className="mb-4 flex flex-col">
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 Food Name
               </label>
@@ -1078,6 +1075,7 @@ const FoodStationInteraction = () => {
                 placeholder="Enter food name"
               />
             </div>
+
             <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 Diet Type
@@ -1093,6 +1091,7 @@ const FoodStationInteraction = () => {
                 <option value="non-veg">Non-Vegetarian</option>
               </select>
             </div>
+
             <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 Expiry Date
@@ -1106,6 +1105,7 @@ const FoodStationInteraction = () => {
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               />
             </div>
+
             <div className="mt-6">
               <button
                 onClick={submitFoodData}
@@ -1126,21 +1126,19 @@ const FoodStationInteraction = () => {
               </button>
             </div>
           </div>
+          </div>
         </div>
       )}
-
       {/* Virtual Keyboard */}
       {showKeyboard && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white shadow-lg">
-          <VirtualKeyboard
-            onInput={handleKeyboardInput}
-            initialValue={foodData[activeField]}
-            onEnter={handleKeyboardEnter}
-            onClose={() => setShowKeyboard(false)}
-          />
-        </div>
+        <VirtualKeyboard
+          onInput={handleKeyboardInput}
+          initialValue={foodData[activeField]}
+          onEnter={handleKeyboardEnter}
+          onClose={() => setShowKeyboard(false)}
+        />
       )}
-
+      =
       {step === "confirmation" && (
         <div className="bg-white shadow-md rounded-lg p-6 text-center">
           <h2 className="text-xl font-semibold mb-4">Place Food in Rack</h2>
@@ -1195,7 +1193,6 @@ const FoodStationInteraction = () => {
           </div>
         </div>
       )}
-
       {step === "take-food" && (
         <div className="bg-white shadow-md rounded-lg p-6 text-center">
           <h2 className="text-xl font-semibold mb-4">Take Any Food Item</h2>
@@ -1253,7 +1250,6 @@ const FoodStationInteraction = () => {
           </div>
         </div>
       )}
-
       {step === "take-confirmation" && (
         <div className="bg-white shadow-md rounded-lg p-6 text-center">
           <h2 className="text-xl font-semibold mb-4">
@@ -1304,7 +1300,6 @@ const FoodStationInteraction = () => {
           </div>
         </div>
       )}
-
       {/* Sensor data display - Updated to show all available sensor data */}
       {/* {station && (
         <div className="mt-8 bg-white shadow-md rounded-lg p-6">
@@ -1341,7 +1336,6 @@ const FoodStationInteraction = () => {
           </div>
         </div>
       )} */}
-
       {/* Food Station Cabinet */}
       <div className="mt-4 sm:mt-8 p-3 sm:p-6 border rounded-lg shadow-inner bg-gray-50">
         <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-center">
@@ -1475,7 +1469,6 @@ const FoodStationInteraction = () => {
           </div>
         )}
       </div>
-
       {/* Footer with navigation */}
       {/* <div className="mt-8 flex justify-center">
         <button
