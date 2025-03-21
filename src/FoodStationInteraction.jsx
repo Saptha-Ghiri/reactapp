@@ -1010,15 +1010,15 @@ const FoodStationInteraction = () => {
         <div className="bg-white shadow-md rounded-lg p-6">
           <h2 className="text-xl font-semibold mb-4">Add Food Details</h2>
 
-          <div className="mb-6 flex">
-            <div className="flex flex-col h-full">
-              {/* Video preview or captured photo */}
-              <div className="relative flex h-full">
+          <div className="mb-6 flex flex-row">
+            {/* Left side - Camera */}
+            <div className="w-1/2 pr-4">
+              <div className="relative h-full">
                 {!foodData.imageUrl ? (
                   <video
                     ref={videoRef}
                     autoPlay
-                    className="w-full h-52 object-cover bg-gray-200 mb-2 rounded"
+                    className="w-full h-96 object-cover bg-gray-200 mb-2 rounded"
                   ></video>
                 ) : (
                   <img
@@ -1058,74 +1058,75 @@ const FoodStationInteraction = () => {
               </div>
             </div>
 
-<div className="flex flex-col p-10">
-            {/* Food details form */}
-            <div className="mb-4 flex flex-col">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Food Name
-              </label>
-              <input
-                type="text"
-                value={foodData.name}
-                onChange={(e) =>
-                  setFoodData((prev) => ({ ...prev, name: e.target.value }))
-                }
-                onFocus={() => handleInputFocus("name")}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                placeholder="Enter food name"
-              />
-            </div>
+            {/* Right side - Form */}
+            <div className="w-1/2 pl-4">
+              {/* Food details form */}
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Food Name
+                </label>
+                <input
+                  type="text"
+                  value={foodData.name}
+                  onChange={(e) =>
+                    setFoodData((prev) => ({ ...prev, name: e.target.value }))
+                  }
+                  onFocus={() => handleInputFocus("name")}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  placeholder="Enter food name"
+                />
+              </div>
 
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Diet Type
-              </label>
-              <select
-                value={foodData.diet}
-                onChange={(e) =>
-                  setFoodData((prev) => ({ ...prev, diet: e.target.value }))
-                }
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              >
-                <option value="veg">Vegetarian</option>
-                <option value="non-veg">Non-Vegetarian</option>
-              </select>
-            </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Diet Type
+                </label>
+                <select
+                  value={foodData.diet}
+                  onChange={(e) =>
+                    setFoodData((prev) => ({ ...prev, diet: e.target.value }))
+                  }
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                >
+                  <option value="veg">Vegetarian</option>
+                  <option value="non-veg">Non-Vegetarian</option>
+                </select>
+              </div>
 
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Expiry Date
-              </label>
-              <input
-                type="date"
-                value={foodData.date}
-                onChange={(e) =>
-                  setFoodData((prev) => ({ ...prev, date: e.target.value }))
-                }
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Expiry Date
+                </label>
+                <input
+                  type="date"
+                  value={foodData.date}
+                  onChange={(e) =>
+                    setFoodData((prev) => ({ ...prev, date: e.target.value }))
+                  }
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                />
+              </div>
 
-            <div className="mt-6">
-              <button
-                onClick={submitFoodData}
-                disabled={!foodData.name || !foodData.imageUrl}
-                className={`w-full py-2 px-4 rounded font-bold ${
-                  !foodData.name || !foodData.imageUrl
-                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-green-500 hover:bg-green-700 text-white"
-                }`}
-              >
-                Submit Food Details
-              </button>
-              <button
-                onClick={handleCancelOperation}
-                className="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4"
-              >
-                Cancel
-              </button>
+              <div className="mt-6">
+                <button
+                  onClick={submitFoodData}
+                  disabled={!foodData.name || !foodData.imageUrl}
+                  className={`w-full py-2 px-4 rounded font-bold ${
+                    !foodData.name || !foodData.imageUrl
+                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      : "bg-green-500 hover:bg-green-700 text-white"
+                  }`}
+                >
+                  Submit Food Details
+                </button>
+                <button
+                  onClick={handleCancelOperation}
+                  className="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
-          </div>
           </div>
         </div>
       )}
