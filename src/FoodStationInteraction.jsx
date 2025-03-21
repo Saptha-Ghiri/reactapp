@@ -1061,7 +1061,7 @@ const FoodStationInteraction = () => {
             {/* Right side - Form */}
             <div className="w-1/2 pl-4">
               {/* Food details form */}
-              <div className="mb-4">
+              <div className="mb-4 flex">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
                   Food Name
                 </label>
@@ -1077,7 +1077,7 @@ const FoodStationInteraction = () => {
                 />
               </div>
 
-              <div className="mb-4">
+              <div className="mb-4 flex">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
                   Diet Type
                 </label>
@@ -1093,7 +1093,7 @@ const FoodStationInteraction = () => {
                 </select>
               </div>
 
-              <div className="mb-4">
+              <div className="mb-4 flex">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
                   Expiry Date
                 </label>
