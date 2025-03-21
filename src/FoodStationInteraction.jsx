@@ -1017,7 +1017,7 @@ const FoodStationInteraction = () => {
       )}
 
 {step === "put-food" && (
-  <div className="bg-white shadow-md rounded-lg p-6 overflow-y-auto custom-scrollbar h-screen flex flex-col">              <h2 className="text-xl font-semibold mb-4">Add Food Details</h2>
+  <div className="bg-white shadow-md rounded-lg p-6 overflow-y-auto custom-scrollbar h-screen flex flex-col pb-96">              <h2 className="text-xl font-semibold mb-4">Add Food Details</h2>
 
           <div className="mb-6">
             {/* Video preview or captured photo */}
