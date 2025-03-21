@@ -33,6 +33,8 @@ const FoodStationInteraction = () => {
   const [checkingForFood, setCheckingForFood] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
 
+  
+
   // Constants for ultrasonic thresholds
   const FOOD_PRESENT_THRESHOLD = 15; // If less than this value (cm), food is present
   const FOOD_ABSENT_THRESHOLD = 20; // If greater than this value (cm), food is absent
@@ -1015,8 +1017,7 @@ const FoodStationInteraction = () => {
       )}
 
 {step === "put-food" && (
-        <div className="bg-white shadow-md rounded-lg p-6">
-          <h2 className="text-xl font-semibold mb-4">Add Food Details</h2>
+  <div className="bg-white shadow-md rounded-lg p-6 overflow-y-auto custom-scrollbar h-screen flex flex-col">              <h2 className="text-xl font-semibold mb-4">Add Food Details</h2>
 
           <div className="mb-6">
             {/* Video preview or captured photo */}
