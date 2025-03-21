@@ -33,8 +33,6 @@ const FoodStationInteraction = () => {
   const [checkingForFood, setCheckingForFood] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
 
-  
-
   // Constants for ultrasonic thresholds
   const FOOD_PRESENT_THRESHOLD = 15; // If less than this value (cm), food is present
   const FOOD_ABSENT_THRESHOLD = 20; // If greater than this value (cm), food is absent
@@ -929,27 +927,24 @@ const FoodStationInteraction = () => {
     checkFoodPresence();
   };
 
-    
-    const [showKeyboard, setShowKeyboard] = useState(false);
-    const [activeField, setActiveField] = useState('');
-    
-    const handleInputFocus = (fieldName) => {
-      setShowKeyboard(true);
-      setActiveField(fieldName);
-    };
-    
-    const handleKeyboardInput = (input) => {
-      setFoodData(prev => ({
-        ...prev,
-        [activeField]: input
-      }));
-    };
-    
-    const handleKeyboardEnter = () => {
-      setShowKeyboard(false);
-    };
-    
-   
+  const [showKeyboard, setShowKeyboard] = useState(false);
+  const [activeField, setActiveField] = useState("");
+
+  const handleInputFocus = (fieldName) => {
+    setShowKeyboard(true);
+    setActiveField(fieldName);
+  };
+
+  const handleKeyboardInput = (input) => {
+    setFoodData((prev) => ({
+      ...prev,
+      [activeField]: input,
+    }));
+  };
+
+  const handleKeyboardEnter = () => {
+    setShowKeyboard(false);
+  };
 
   // Render based on current step
   return (
@@ -1016,23 +1011,26 @@ const FoodStationInteraction = () => {
         </div>
       )}
 
-{step === "put-food" && (
-  <div className="bg-white shadow-md rounded-lg p-6 overflow-y-auto custom-scrollbar h-screen flex flex-col pb-96">              <h2 className="text-xl font-semibold mb-4">Add Food Details</h2>
+      {step === "put-food" && (
+        <div className="bg-white shadow-md rounded-lg p-6 overflow-y-auto custom-scrollbar h-screen flex flex-col relative">
+          <h2 className="text-xl font-semibold mb-4">Add Food Details</h2>
 
-          <div className="mb-6">
+          <div className="mb-6 pb-20">
+            {" "}
+            {/* Added padding at bottom to make room for keyboard */}
             {/* Video preview or captured photo */}
             <div className="relative">
               {!foodData.imageUrl ? (
                 <video
                   ref={videoRef}
                   autoPlay
-                  className="w-full h-96 object-cover bg-gray-200 mb-2 rounded"
+                  className="w-full h-64 object-cover bg-gray-200 mb-2 rounded" // Reduced height from h-96 to h-64
                 ></video>
               ) : (
                 <img
                   src={foodData.imageUrl}
                   alt="Food"
-                  className="w-full h-64 object-cover bg-gray-200 mb-2 rounded"
+                  className="w-full h-48 object-cover bg-gray-200 mb-2 rounded" // Reduced height from h-64 to h-48
                 />
               )}
 
@@ -1064,7 +1062,6 @@ const FoodStationInteraction = () => {
                 </button>
               )}
             </div>
-
             {/* Food details form */}
             <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -1076,12 +1073,11 @@ const FoodStationInteraction = () => {
                 onChange={(e) =>
                   setFoodData((prev) => ({ ...prev, name: e.target.value }))
                 }
-                onFocus={() => handleInputFocus('name')}
+                onFocus={() => handleInputFocus("name")}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 placeholder="Enter food name"
               />
             </div>
-
             <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 Diet Type
@@ -1097,7 +1093,6 @@ const FoodStationInteraction = () => {
                 <option value="non-veg">Non-Vegetarian</option>
               </select>
             </div>
-
             <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 Expiry Date
@@ -1111,7 +1106,6 @@ const FoodStationInteraction = () => {
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               />
             </div>
-
             <div className="mt-6">
               <button
                 onClick={submitFoodData}
@@ -1134,17 +1128,18 @@ const FoodStationInteraction = () => {
           </div>
         </div>
       )}
-      
+
       {/* Virtual Keyboard */}
       {showKeyboard && (
-        <VirtualKeyboard
-          onInput={handleKeyboardInput}
-          initialValue={foodData[activeField]}
-          onEnter={handleKeyboardEnter}
-          onClose={() => setShowKeyboard(false)}
-        />
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white shadow-lg">
+          <VirtualKeyboard
+            onInput={handleKeyboardInput}
+            initialValue={foodData[activeField]}
+            onEnter={handleKeyboardEnter}
+            onClose={() => setShowKeyboard(false)}
+          />
+        </div>
       )}
-=  
 
       {step === "confirmation" && (
         <div className="bg-white shadow-md rounded-lg p-6 text-center">
